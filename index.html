@@ -708,6 +708,7 @@
       border: 1px solid var(--border-color);
       font-size: 0.8rem;
       font-weight: 600;
+      margin-bottom: 5px;
     }
 
     .action-btn {
@@ -716,6 +717,7 @@
       font-size: 0.75rem;
       margin-right: 5px;
       color: #fff;
+      display: inline-block;
     }
 
     .btn-edit { background: var(--info); }
@@ -746,6 +748,41 @@
       padding: 30px;
       font-weight: 600;
       color: var(--primary-dark);
+    }
+
+    /* Danger Warning Modal */
+    .warning-box {
+      text-align: center;
+      padding: 25px;
+    }
+
+    .warning-icon {
+      font-size: 3rem;
+      color: var(--danger);
+      margin-bottom: 15px;
+    }
+
+    .btn-group-confirm {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .btn-confirm-delete {
+      background: var(--danger);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .btn-cancel-delete {
+      background: #ccc;
+      color: #333;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
     }
 
     @media(max-width: 768px) {
@@ -951,10 +988,11 @@
                 <th>Total Price</th>
                 <th>Order Status</th>
                 <th>Update Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="admin-orders-tbody">
-              <tr><td colspan="7" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading database orders...</td></tr>
+              <tr><td colspan="8" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading database orders...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1162,10 +1200,28 @@
     </div>
   </div>
 
+  <!-- 6. Delete Order Confirmation Warning Modal -->
+  <div class="modal-overlay" id="delete-order-modal">
+    <div class="modal-card" style="max-width: 420px;">
+      <span class="close-modal" onclick="closeModal('delete-order-modal')">&times;</span>
+      <div class="warning-box">
+        <i class="fa-solid fa-triangle-exclamation warning-icon"></i>
+        <h3>Are you sure?</h3>
+        <p style="font-size:0.9rem; color:#666; margin-top:8px;">
+          This action will permanently remove order <strong id="delete-order-id-display"></strong> from the Google Sheets database.
+        </p>
+        <div class="btn-group-confirm">
+          <button class="btn-cancel-delete" onclick="closeModal('delete-order-modal')">Cancel</button>
+          <button class="btn-confirm-delete" id="btn-confirm-order-delete">Yes, Delete Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== JAVASCRIPT LOGIC ==================== -->
   <script>
     // Constants
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybypmkiqc391BWj6PtctVSVuQUajDuohc1uSPGGEaqjFgmcVCJakgIMBDRqwOY3neb_g/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby9OZKCl4YtVkPiIufLLy8ZPlU9_pN8yo3XhNdFzI-DrgnW364yEU9VMGkXI9GPtGrx5Q/exec";
     const SERVICE_CHARGE = 120;
     const ADMIN_PASSWORD_HASH = "admin123";
 
@@ -1176,6 +1232,7 @@
     let selectedProduct = null;
     let activeCategory = 'All';
     let uploadedImageData = '';
+    let pendingDeleteOrderId = null;
 
     // Initialize App
     window.onload = function() {
@@ -1512,7 +1569,7 @@
       tbody.innerHTML = '';
 
       if (orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No orders recorded in spreadsheet yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No orders recorded in spreadsheet yet.</td></tr>`;
         return;
       }
 
@@ -1555,6 +1612,11 @@
               <option value="returned" ${currentStatus === 'returned' ? 'selected' : ''}>returned</option>
             </select>
           </td>
+          <td>
+            <button class="action-btn btn-delete" onclick="promptDeleteOrder('${o.orderId}')">
+              <i class="fa-solid fa-trash"></i> Remove
+            </button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -1576,6 +1638,42 @@
       } catch (err) {
         alert("⚠️ Failed to sync status update to Google Sheets.");
         console.error(err);
+      }
+    }
+
+    function promptDeleteOrder(orderId) {
+      pendingDeleteOrderId = orderId;
+      document.getElementById('delete-order-id-display').innerText = orderId;
+      
+      const confirmBtn = document.getElementById('btn-confirm-order-delete');
+      confirmBtn.onclick = function() {
+        confirmDeleteOrder(orderId);
+      };
+
+      openModal('delete-order-modal');
+    }
+
+    async function confirmDeleteOrder(orderId) {
+      const confirmBtn = document.getElementById('btn-confirm-order-delete');
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Deleting...`;
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'deleteOrder', orderId: orderId })
+        });
+
+        orders = orders.filter(o => String(o.orderId) !== String(orderId));
+        closeModal('delete-order-modal');
+        renderAdminOrders();
+        renderAdminDashboard();
+      } catch (err) {
+        alert("⚠️ Failed to delete order from database spreadsheet.");
+        console.error(err);
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = `Yes, Delete Order`;
       }
     }
 
