@@ -18,7 +18,7 @@
       --text-main: #2c2c2c;
       --text-muted: #666666;
       --border-color: #eae1d0;
-      --danger: #e74c3c;
+      --danger: #ea4335;
       --success: #2ecc71;
       --info: #3498db;
       --warning: #f39c12;
@@ -750,39 +750,96 @@
       color: var(--primary-dark);
     }
 
-    /* Danger Warning Modals */
-    .warning-box {
+    /* --- Delete Modal (Matches Reference Image) --- */
+    .delete-modal-card {
+      background: #ffffff;
+      border-radius: 20px;
+      max-width: 440px;
+      width: 90%;
+      padding: 35px 30px;
+      position: relative;
       text-align: center;
-      padding: 25px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     }
 
-    .warning-icon {
-      font-size: 3rem;
-      color: var(--danger);
+    .delete-modal-card .close-modal {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      font-size: 1.4rem;
+      color: #888888;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .delete-modal-card .close-modal:hover {
+      color: #333333;
+    }
+
+    .delete-warning-icon {
+      font-size: 3.5rem;
+      color: #ea4335;
       margin-bottom: 15px;
     }
 
-    .btn-group-confirm {
+    .delete-modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+
+    .delete-modal-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      color: #666666;
+      line-height: 1.5;
+      margin-bottom: 25px;
+      padding: 0 10px;
+    }
+
+    .delete-modal-text strong {
+      color: #2c2c2c;
+      font-weight: 700;
+    }
+
+    .delete-btn-group {
       display: flex;
-      gap: 10px;
       justify-content: center;
-      margin-top: 20px;
+      gap: 15px;
     }
 
-    .btn-confirm-delete {
-      background: var(--danger);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: 600;
+    .btn-modal-cancel {
+      background: #cccccc;
+      color: #2c2c2c;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .btn-cancel-delete {
-      background: #ccc;
-      color: #333;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: 600;
+    .btn-modal-cancel:hover {
+      background: #bbbbbb;
+    }
+
+    .btn-modal-delete {
+      background: #ea4335;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-modal-delete:hover {
+      background: #d33426;
     }
 
     @media(max-width: 768px) {
@@ -1202,36 +1259,36 @@
 
   <!-- 6. Delete Order Confirmation Warning Modal -->
   <div class="modal-overlay" id="delete-order-modal">
-    <div class="modal-card" style="max-width: 420px;">
+    <div class="delete-modal-card">
       <span class="close-modal" onclick="closeModal('delete-order-modal')">&times;</span>
-      <div class="warning-box">
-        <i class="fa-solid fa-triangle-exclamation warning-icon"></i>
-        <h3>Delete Order?</h3>
-        <p style="font-size:0.9rem; color:#666; margin-top:8px;">
-          This action will permanently remove order <strong id="delete-order-id-display"></strong> from the Google Sheets database.
-        </p>
-        <div class="btn-group-confirm">
-          <button class="btn-cancel-delete" onclick="closeModal('delete-order-modal')">Cancel</button>
-          <button class="btn-confirm-delete" id="btn-confirm-order-delete">Yes, Delete Order</button>
-        </div>
+      <div class="delete-warning-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="delete-modal-title">Are you sure?</h3>
+      <p class="delete-modal-text">
+        This action will permanently remove order <strong id="delete-order-id-display">ORD-XXXXXX</strong> from the Google Sheets database.
+      </p>
+      <div class="delete-btn-group">
+        <button class="btn-modal-cancel" onclick="closeModal('delete-order-modal')">Cancel</button>
+        <button class="btn-modal-delete" id="btn-confirm-order-delete">Yes, Delete Order</button>
       </div>
     </div>
   </div>
 
   <!-- 7. Delete Product Confirmation Warning Modal -->
   <div class="modal-overlay" id="delete-product-modal">
-    <div class="modal-card" style="max-width: 420px;">
+    <div class="delete-modal-card">
       <span class="close-modal" onclick="closeModal('delete-product-modal')">&times;</span>
-      <div class="warning-box">
-        <i class="fa-solid fa-triangle-exclamation warning-icon"></i>
-        <h3>Delete Product?</h3>
-        <p style="font-size:0.9rem; color:#666; margin-top:8px;">
-          This action will permanently delete <strong id="delete-product-name-display"></strong> from the Product Inventory.
-        </p>
-        <div class="btn-group-confirm">
-          <button class="btn-cancel-delete" onclick="closeModal('delete-product-modal')">Cancel</button>
-          <button class="btn-confirm-delete" id="btn-confirm-product-delete">Yes, Delete Product</button>
-        </div>
+      <div class="delete-warning-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="delete-modal-title">Are you sure?</h3>
+      <p class="delete-modal-text">
+        This action will permanently remove product <strong id="delete-product-name-display">Product Name</strong> from the Google Sheets database.
+      </p>
+      <div class="delete-btn-group">
+        <button class="btn-modal-cancel" onclick="closeModal('delete-product-modal')">Cancel</button>
+        <button class="btn-modal-delete" id="btn-confirm-product-delete">Yes, Delete Product</button>
       </div>
     </div>
   </div>
@@ -1239,7 +1296,7 @@
   <!-- ==================== JAVASCRIPT LOGIC ==================== -->
   <script>
     // Constants
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzrohoOKNyLowhD9JuZLm4pLTMUUyrYe-SeHRblbQgZf2op2760ogxCTk8lgMUm7cGIw/exec";
+    const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
     const SERVICE_CHARGE = 120;
     const ADMIN_PASSWORD_HASH = "admin123";
 
