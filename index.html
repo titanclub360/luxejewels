@@ -702,6 +702,14 @@
     .badge-cancelled { background: #fee2e2; color: #991b1b; }
     .badge-returned { background: #f3e8ff; color: #6b21a8; }
 
+    .status-select {
+      padding: 5px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
     .action-btn {
       padding: 6px 10px;
       border-radius: 4px;
@@ -712,12 +720,6 @@
 
     .btn-edit { background: var(--info); }
     .btn-delete { background: var(--danger); }
-
-    .order-action-cell {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
 
     .login-box {
       max-width: 400px;
@@ -935,7 +937,7 @@
         </div>
       </div>
 
-      <!-- Tab 2: Orders -->
+      <!-- Tab 2: Orders Management -->
       <div id="tab-orders" class="admin-section">
         <h3 style="margin-bottom: 15px;">Customer Orders</h3>
         <div class="table-responsive">
@@ -944,20 +946,21 @@
               <tr>
                 <th>Order ID</th>
                 <th>Customer Details</th>
-                <th>Items & Details</th>
+                <th>Product / Items</th>
                 <th>Payment & TxID</th>
                 <th>Total Price</th>
                 <th>Order Status</th>
+                <th>Update Status</th>
               </tr>
             </thead>
             <tbody id="admin-orders-tbody">
-              <tr><td colspan="6" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading database orders...</td></tr>
+              <tr><td colspan="7" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading database orders...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Tab 3: Products -->
+      <!-- Tab 3: Product Inventory -->
       <div id="tab-products" class="admin-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
           <h3>Product Catalog</h3>
@@ -974,10 +977,11 @@
                 <th>Category</th>
                 <th>Price</th>
                 <th>Description</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="admin-products-tbody">
-              <tr><td colspan="5" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading inventory...</td></tr>
+              <tr><td colspan="6" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading inventory...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1111,13 +1115,14 @@
     </div>
   </div>
 
-  <!-- 5. Add Product Modal -->
+  <!-- 5. Add/Edit Product Modal -->
   <div class="modal-overlay" id="product-form-modal">
     <div class="modal-card">
       <span class="close-modal" onclick="closeModal('product-form-modal')">&times;</span>
       <div style="padding: 30px;">
         <h2 id="product-modal-title" style="margin-bottom: 20px;">Add New Product</h2>
         <form id="product-form" onsubmit="handleSaveProduct(event)">
+          <input type="hidden" id="edit-prod-id">
           
           <div class="form-group">
             <label>Product Name *</label>
@@ -1160,7 +1165,7 @@
   <!-- ==================== JAVASCRIPT LOGIC ==================== -->
   <script>
     // Constants
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqWfIFWLWXMeYZNTc6ELvU0Ka173ORg0itP8IadLJuQsprsl_tLs_mNqhCoOxPAgN8SQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybypmkiqc391BWj6PtctVSVuQUajDuohc1uSPGGEaqjFgmcVCJakgIMBDRqwOY3neb_g/exec";
     const SERVICE_CHARGE = 120;
     const ADMIN_PASSWORD_HASH = "admin123";
 
@@ -1478,7 +1483,7 @@
       let pending = 0, accepted = 0, transit = 0, delivered = 0, cancelled = 0, returned = 0;
 
       orders.forEach(o => {
-        const status = String(o.status).toLowerCase();
+        const status = String(o.status || 'pending').toLowerCase();
         if(status === 'delivered') revenue += Number(o.totalAmount || 0);
         if(status === 'pending') pending++;
         if(status === 'order accepted') accepted++;
@@ -1507,27 +1512,31 @@
       tbody.innerHTML = '';
 
       if (orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No orders recorded in spreadsheet yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No orders recorded in spreadsheet yet.</td></tr>`;
         return;
       }
 
       orders.forEach(o => {
         const tr = document.createElement('tr');
-        const status = String(o.status || 'pending').toLowerCase();
+        const currentStatus = String(o.status || 'pending').toLowerCase();
         
         let badgeClass = 'badge-pending';
-        if(status === 'order accepted') badgeClass = 'badge-accepted';
-        if(status === 'in transit') badgeClass = 'badge-transit';
-        if(status === 'delivered') badgeClass = 'badge-delivered';
-        if(status === 'order cancelled') badgeClass = 'badge-cancelled';
-        if(status === 'returned') badgeClass = 'badge-returned';
+        if(currentStatus === 'order accepted') badgeClass = 'badge-accepted';
+        if(currentStatus === 'in transit') badgeClass = 'badge-transit';
+        if(currentStatus === 'delivered') badgeClass = 'badge-delivered';
+        if(currentStatus === 'order cancelled') badgeClass = 'badge-cancelled';
+        if(currentStatus === 'returned') badgeClass = 'badge-returned';
+
+        const custName = o.customerName || o.name || 'N/A';
+        const custPhone = o.customerPhone || o.phone || 'N/A';
+        const custAddress = o.customerAddress || o.address || 'N/A';
 
         tr.innerHTML = `
           <td><strong>${o.orderId}</strong><br><small style="color:#888;">${o.date || ''}</small></td>
           <td>
-            <strong>${o.customerName || o.name || ''}</strong><br>
-            📞 ${o.customerPhone || o.phone || ''}<br>
-            📍 ${o.customerAddress || o.address || ''}
+            <strong>${custName}</strong><br>
+            📞 ${custPhone}<br>
+            📍 ${custAddress}
           </td>
           <td>${o.items || 'N/A'}</td>
           <td>
@@ -1535,15 +1544,49 @@
             <small>TxID: <strong>${o.transactionId || 'N/A'}</strong></small>
           </td>
           <td><strong>${o.totalAmount} Tk</strong></td>
-          <td><span class="badge ${badgeClass}">${status.toUpperCase()}</span></td>
+          <td><span class="badge ${badgeClass}">${currentStatus.toUpperCase()}</span></td>
+          <td>
+            <select class="status-select" onchange="updateOrderStatus('${o.orderId}', this.value)">
+              <option value="pending" ${currentStatus === 'pending' ? 'selected' : ''}>pending</option>
+              <option value="order accepted" ${currentStatus === 'order accepted' ? 'selected' : ''}>order accepted</option>
+              <option value="in transit" ${currentStatus === 'in transit' ? 'selected' : ''}>in transit</option>
+              <option value="delivered" ${currentStatus === 'delivered' ? 'selected' : ''}>delivered</option>
+              <option value="order cancelled" ${currentStatus === 'order cancelled' ? 'selected' : ''}>order cancelled</option>
+              <option value="returned" ${currentStatus === 'returned' ? 'selected' : ''}>returned</option>
+            </select>
+          </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
+    async function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => String(o.orderId) === String(orderId));
+      if (order) {
+        order.status = newStatus;
+        renderAdminOrders();
+        renderAdminDashboard();
+      }
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'updateOrderStatus', orderId: orderId, newStatus: newStatus })
+        });
+      } catch (err) {
+        alert("⚠️ Failed to sync status update to Google Sheets.");
+        console.error(err);
+      }
+    }
+
     function renderAdminProducts() {
       const tbody = document.getElementById('admin-products-tbody');
       tbody.innerHTML = '';
+
+      if (products.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No products in inventory.</td></tr>`;
+        return;
+      }
 
       products.forEach(p => {
         const tr = document.createElement('tr');
@@ -1552,7 +1595,11 @@
           <td><strong>${p.name}</strong></td>
           <td>${p.category}</td>
           <td>${p.price} Tk</td>
-          <td><small>${String(p.description || '').substring(0, 50)}...</small></td>
+          <td><small>${String(p.description || '').substring(0, 40)}...</small></td>
+          <td>
+            <button class="action-btn btn-edit" onclick="openEditProductModal('${p.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteProduct('${p.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -1573,16 +1620,39 @@
     }
 
     function openAddProductModal() {
+      document.getElementById('product-modal-title').innerText = "Add New Product";
       document.getElementById('product-form').reset();
+      document.getElementById('edit-prod-id').value = '';
       document.getElementById('upload-preview').style.display = 'none';
       uploadedImageData = '';
       openModal('product-form-modal');
     }
 
-    // POST PRODUCT TO DATABASE SHEET
+    function openEditProductModal(id) {
+      const p = products.find(prod => String(prod.id) === String(id));
+      if(!p) return;
+
+      document.getElementById('product-modal-title').innerText = "Edit Product";
+      document.getElementById('edit-prod-id').value = p.id;
+      document.getElementById('prod-name').value = p.name;
+      document.getElementById('prod-category').value = p.category;
+      document.getElementById('prod-price').value = p.price;
+      document.getElementById('prod-img-url').value = p.image;
+      document.getElementById('prod-desc').value = p.description;
+
+      const preview = document.getElementById('upload-preview');
+      preview.src = p.image;
+      preview.style.display = 'block';
+      uploadedImageData = p.image;
+
+      openModal('product-form-modal');
+    }
+
+    // POST PRODUCT (ADD OR EDIT) TO DATABASE SHEET
     async function handleSaveProduct(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-save-prod');
+      const editId = document.getElementById('edit-prod-id').value;
       
       const imageUrlInput = document.getElementById('prod-img-url').value.trim();
       const finalImage = imageUrlInput || uploadedImageData;
@@ -1595,8 +1665,8 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Writing to Spreadsheet...`;
 
-      const newProduct = {
-        id: 'p-' + Date.now(),
+      const prodPayload = {
+        id: editId || ('p-' + Date.now()),
         name: document.getElementById('prod-name').value.trim(),
         category: document.getElementById('prod-category').value,
         price: Number(document.getElementById('prod-price').value),
@@ -1604,21 +1674,40 @@
         description: document.getElementById('prod-desc').value.trim()
       };
 
+      const action = editId ? 'editProduct' : 'addProduct';
+
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'addProduct', product: newProduct })
+          body: JSON.stringify({ action: action, product: prodPayload })
         });
 
         closeModal('product-form-modal');
         await fetchProducts();
         renderAdminProducts();
       } catch (err) {
-        alert("⚠️ Could not add product to spreadsheet.");
+        alert("⚠️ Could not update product in spreadsheet.");
         console.error(err);
       } finally {
         btn.disabled = false;
         btn.innerHTML = `Save Product to Database`;
+      }
+    }
+
+    async function deleteProduct(id) {
+      if(!confirm("Are you sure you want to delete this product?")) return;
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'deleteProduct', productId: id })
+        });
+
+        await fetchProducts();
+        renderAdminProducts();
+      } catch (err) {
+        alert("⚠️ Failed to delete product.");
+        console.error(err);
       }
     }
 
