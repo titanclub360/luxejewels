@@ -739,6 +739,13 @@
       background: #f0f0f0;
     }
 
+    .loader-inline {
+      text-align: center;
+      padding: 30px;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
     @media(max-width: 768px) {
       .product-detail-body { grid-template-columns: 1fr; }
       .hero h1 { font-size: 2.2rem; }
@@ -760,7 +767,6 @@
           <i class="fa-solid fa-cart-shopping"></i> Cart
           <span class="cart-badge" id="cart-count">0</span>
         </button>
-        
       </div>
     </nav>
 
@@ -786,7 +792,9 @@
       </div>
 
       <!-- Grid -->
-      <div class="product-grid" id="product-grid"></div>
+      <div class="product-grid" id="product-grid">
+        <div class="loader-inline" style="grid-column: 1/-1;"><i class="fa-solid fa-spinner fa-spin"></i> Loading catalog...</div>
+      </div>
     </main>
 
     <!-- Footer Section -->
@@ -876,9 +884,9 @@
     <div class="container">
       <!-- Admin Navigation Tabs -->
       <div class="admin-tabs">
-        <button class="tab-btn active" onclick="switchAdminTab('dashboard')">Dashboard</button>
-        <button class="tab-btn" onclick="switchAdminTab('orders')">Orders Management</button>
-        <button class="tab-btn" onclick="switchAdminTab('products')">Product Inventory</button>
+        <button class="tab-btn active" onclick="switchAdminTab('dashboard', event)">Dashboard</button>
+        <button class="tab-btn" onclick="switchAdminTab('orders', event)">Orders Management</button>
+        <button class="tab-btn" onclick="switchAdminTab('products', event)">Product Inventory</button>
       </div>
 
       <!-- Tab 1: Dashboard -->
@@ -940,10 +948,11 @@
                 <th>Payment & TxID</th>
                 <th>Total Price</th>
                 <th>Order Status</th>
-                <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="admin-orders-tbody"></tbody>
+            <tbody id="admin-orders-tbody">
+              <tr><td colspan="6" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading database orders...</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -965,10 +974,11 @@
                 <th>Category</th>
                 <th>Price</th>
                 <th>Description</th>
-                <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="admin-products-tbody"></tbody>
+            <tbody id="admin-products-tbody">
+              <tr><td colspan="5" class="loader-inline"><i class="fa-solid fa-spinner fa-spin"></i> Loading inventory...</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -1079,7 +1089,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn-order-now">Confirm & Place Order</button>
+          <button type="submit" class="btn-order-now" id="btn-submit-order">Confirm & Place Order</button>
         </form>
       </div>
     </div>
@@ -1101,14 +1111,13 @@
     </div>
   </div>
 
-  <!-- 5. Add/Edit Product Modal -->
+  <!-- 5. Add Product Modal -->
   <div class="modal-overlay" id="product-form-modal">
     <div class="modal-card">
       <span class="close-modal" onclick="closeModal('product-form-modal')">&times;</span>
       <div style="padding: 30px;">
         <h2 id="product-modal-title" style="margin-bottom: 20px;">Add New Product</h2>
         <form id="product-form" onsubmit="handleSaveProduct(event)">
-          <input type="hidden" id="prod-id">
           
           <div class="form-group">
             <label>Product Name *</label>
@@ -1131,7 +1140,8 @@
           </div>
 
           <div class="form-group">
-            <label>Upload Product Image *</label>
+            <label>Product Image Link / File Upload *</label>
+            <input type="text" id="prod-img-url" placeholder="Paste image URL or choose file below..." style="margin-bottom: 8px;">
             <input type="file" id="prod-img-file" accept="image/*" onchange="previewUploadImage(event)">
             <img id="upload-preview" class="img-preview" alt="Image Preview">
           </div>
@@ -1141,7 +1151,7 @@
             <textarea id="prod-desc" rows="3" required placeholder="Write product details..."></textarea>
           </div>
 
-          <button type="submit" class="btn-order-now">Save Product</button>
+          <button type="submit" class="btn-order-now" id="btn-save-prod">Save Product to Database</button>
         </form>
       </div>
     </div>
@@ -1149,120 +1159,477 @@
 
   <!-- ==================== JAVASCRIPT LOGIC ==================== -->
   <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQVTKLwQgUstxcGWj675oRXKEU-66kxf0pEqh8V2JxooRSoHZGK7Ks7v53oM-Yuv1KyQ/exec";
-  const SERVICE_CHARGE = 120;
-  const ADMIN_PASSWORD_HASH = "admin123";
+    // Constants
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQVTKLwQgUstxcGWj675oRXKEU-66kxf0pEqh8V2JxooRSoHZGK7Ks7v53oM-Yuv1KyQ/exec";
+    const SERVICE_CHARGE = 120;
+    const ADMIN_PASSWORD_HASH = "admin123";
 
-  let products = [];
-  let orders = [];
-  let cart = JSON.parse(localStorage.getItem('luxe_cart')) || [];
-  let selectedProduct = null;
-  let activeCategory = 'All';
-  let uploadedImageData = '';
+    // App State
+    let products = [];
+    let orders = [];
+    let cart = JSON.parse(localStorage.getItem('luxe_cart')) || [];
+    let selectedProduct = null;
+    let activeCategory = 'All';
+    let uploadedImageData = '';
 
-  window.onload = function() {
-    fetchProducts();
-    updateCartBadge();
-  };
+    // Initialize App
+    window.onload = function() {
+      fetchProducts();
+      updateCartBadge();
+    };
 
-  // Fetch Products from Google Sheets
-  async function fetchProducts() {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getProducts`);
-      products = await res.json();
+    // --- GOOGLE APPS SCRIPT DATABASE SERVICES ---
+    async function fetchProducts() {
+      const grid = document.getElementById('product-grid');
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getProducts`);
+        products = await response.json();
+        renderProducts();
+      } catch (err) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--danger);">Failed to load products from database spreadsheet.</p>`;
+        console.error(err);
+      }
+    }
+
+    async function fetchOrders() {
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getOrders`);
+        orders = await response.json();
+        renderAdminDashboard();
+        renderAdminOrders();
+      } catch (err) {
+        console.error("Failed to load orders:", err);
+      }
+    }
+
+    // --- CLIENT UI RENDERERS ---
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+
+      const filtered = activeCategory === 'All' 
+        ? products 
+        : products.filter(p => p.category === activeCategory);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found in this category.</p>`;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
+          <div class="product-info">
+            <div class="product-category">${p.category}</div>
+            <h3 class="product-title">${p.name}</h3>
+            <div class="product-price">${p.price} Tk</div>
+            <button class="btn-view" onclick="openProductDetail('${p.id}')">View Details</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText === cat);
+      });
       renderProducts();
-    } catch (err) {
-      console.error("Failed to fetch products:", err);
-    }
-  }
-
-  // Fetch Orders from Google Sheets (Admin)
-  async function fetchOrders() {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getOrders`);
-      orders = await res.json();
-      renderAdminDashboard();
-      renderAdminOrders();
-    } catch (err) {
-      console.error("Failed to fetch orders:", err);
-    }
-  }
-
-  // Insert Order into Google Sheets
-  async function handlePlaceOrder(e) {
-    e.preventDefault();
-
-    const name = document.getElementById('cust-name').value.trim();
-    const phone = document.getElementById('cust-phone').value.trim();
-    const address = document.getElementById('cust-address').value.trim();
-    const method = document.getElementById('pay-method').value;
-    const txid = document.getElementById('cust-txid').value.trim();
-
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const totalAmount = subtotal + SERVICE_CHARGE;
-    const itemsSummary = cart.map(i => `${i.name} (x${i.quantity})`).join(', ');
-
-    const newOrder = {
-      orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
-      customer: { name, phone, address },
-      items: itemsSummary,
-      totalAmount: totalAmount,
-      paymentMethod: method,
-      transactionId: method === 'Bkash/Rocket Payment' ? txid : 'N/A (COD)',
-      status: 'pending',
-      date: new Date().toLocaleString()
-    };
-
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'addOrder', order: newOrder })
-    });
-
-    cart = [];
-    localStorage.removeItem('luxe_cart');
-    updateCartBadge();
-    closeModal('checkout-modal');
-    alert(`🎉 Order (${newOrder.orderId}) saved directly to Google Sheets!`);
-  }
-
-  // Insert Product into Google Sheets (Admin)
-  async function handleSaveProduct(e) {
-    e.preventDefault();
-
-    if (!uploadedImageData) {
-      alert("Please upload a product image!");
-      return;
+      window.scrollTo({ top: 400, behavior: 'smooth' });
     }
 
-    const newProduct = {
-      id: 'p-' + Date.now(),
-      name: document.getElementById('prod-name').value.trim(),
-      category: document.getElementById('prod-category').value,
-      price: Number(document.getElementById('prod-price').value),
-      image: uploadedImageData,
-      description: document.getElementById('prod-desc').value.trim()
-    };
+    function openProductDetail(id) {
+      selectedProduct = products.find(p => String(p.id) === String(id));
+      if(!selectedProduct) return;
 
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'addProduct', product: newProduct })
-    });
+      document.getElementById('modal-detail-img').src = selectedProduct.image;
+      document.getElementById('modal-detail-cat').innerText = selectedProduct.category;
+      document.getElementById('modal-detail-title').innerText = selectedProduct.name;
+      document.getElementById('modal-detail-price').innerText = `${selectedProduct.price} Tk`;
+      document.getElementById('modal-detail-desc').innerText = selectedProduct.description;
 
-    closeModal('product-form-modal');
-    fetchProducts();
-  }
+      const addBtn = document.getElementById('modal-add-cart-btn');
+      addBtn.onclick = function() {
+        addToCart(selectedProduct.id);
+        closeModal('product-detail-modal');
+        openCartModal();
+      };
 
-  function handleAdminLogin(e) {
-    e.preventDefault();
-    if (document.getElementById('admin-pass').value === ADMIN_PASSWORD_HASH) {
-      closeModal('admin-login-modal');
-      document.getElementById('client-view').style.display = 'none';
-      document.getElementById('admin-view').style.display = 'block';
-      fetchOrders();
-    } else {
-      alert('❌ Incorrect Admin Password!');
+      openModal('product-detail-modal');
     }
-  }
-</script>
+
+    // CART MANAGEMENT
+    function addToCart(productId) {
+      const existing = cart.find(item => String(item.id) === String(productId));
+      if(existing) {
+        existing.quantity += 1;
+      } else {
+        const prod = products.find(p => String(p.id) === String(productId));
+        if(prod) {
+          cart.push({ ...prod, quantity: 1 });
+        }
+      }
+      saveCartLocal();
+    }
+
+    function updateCartQuantity(productId, delta) {
+      const item = cart.find(i => String(i.id) === String(productId));
+      if(item) {
+        item.quantity += delta;
+        if(item.quantity <= 0) {
+          cart = cart.filter(i => String(i.id) !== String(productId));
+        }
+        saveCartLocal();
+        renderCartModal();
+      }
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(i => String(i.id) !== String(productId));
+      saveCartLocal();
+      renderCartModal();
+    }
+
+    function saveCartLocal() {
+      localStorage.setItem('luxe_cart', JSON.stringify(cart));
+      updateCartBadge();
+    }
+
+    function updateCartBadge() {
+      const count = cart.reduce((total, item) => total + item.quantity, 0);
+      document.getElementById('cart-count').innerText = count;
+    }
+
+    function openCartModal() {
+      renderCartModal();
+      openModal('cart-modal');
+    }
+
+    function renderCartModal() {
+      const container = document.getElementById('cart-items-container');
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = `<p style="text-align:center; padding:20px; color:#888;">Your cart is empty.</p>`;
+        document.getElementById('cart-subtotal').innerText = '0 Tk';
+        document.getElementById('cart-total').innerText = '0 Tk';
+        return;
+      }
+
+      let subtotal = 0;
+
+      cart.forEach(item => {
+        subtotal += item.price * item.quantity;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">${item.price} Tk</div>
+            <div class="qty-btn-group">
+              <button class="qty-btn" onclick="updateCartQuantity('${item.id}', -1)">-</button>
+              <span>${item.quantity}</span>
+              <button class="qty-btn" onclick="updateCartQuantity('${item.id}', 1)">+</button>
+            </div>
+          </div>
+          <button class="btn-cart-remove" onclick="removeFromCart('${item.id}')"><i class="fa-solid fa-trash-can"></i></button>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('cart-subtotal').innerText = `${subtotal} Tk`;
+      document.getElementById('cart-total').innerText = `${subtotal + SERVICE_CHARGE} Tk`;
+    }
+
+    function proceedToCheckout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      closeModal('cart-modal');
+      openCheckoutModal();
+    }
+
+    function openCheckoutModal() {
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const totalPrice = subtotal + SERVICE_CHARGE;
+
+      document.getElementById('summary-prod-price').innerText = `${subtotal} Tk`;
+      document.getElementById('summary-total-price').innerText = `${totalPrice} Tk`;
+
+      document.getElementById('checkout-form').reset();
+      togglePaymentFields();
+
+      openModal('checkout-modal');
+    }
+
+    function togglePaymentFields() {
+      const method = document.getElementById('pay-method').value;
+      const txGroup = document.getElementById('txid-group');
+      const txInput = document.getElementById('cust-txid');
+      const bkashInst = document.getElementById('bkash-instructions');
+
+      if (method === 'Bkash/Rocket Payment') {
+        txGroup.style.display = 'block';
+        txInput.required = true;
+        bkashInst.style.display = 'block';
+      } else {
+        txGroup.style.display = 'none';
+        txInput.required = false;
+        bkashInst.style.display = 'none';
+      }
+    }
+
+    // POST ORDER TO DATABASE SHEET
+    async function handlePlaceOrder(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-order');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving Order...`;
+
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+      const address = document.getElementById('cust-address').value.trim();
+      const method = document.getElementById('pay-method').value;
+      const txid = document.getElementById('cust-txid').value.trim();
+
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const totalAmount = subtotal + SERVICE_CHARGE;
+      const itemsSummary = cart.map(i => `${i.name} (x${i.quantity})`).join(', ');
+
+      const newOrder = {
+        orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        customer: { name, phone, address },
+        items: itemsSummary,
+        totalAmount: totalAmount,
+        paymentMethod: method,
+        transactionId: method === 'Bkash/Rocket Payment' ? txid : 'N/A (COD)',
+        status: 'pending',
+        date: new Date().toLocaleString()
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'addOrder', order: newOrder })
+        });
+
+        cart = [];
+        localStorage.removeItem('luxe_cart');
+        updateCartBadge();
+
+        closeModal('checkout-modal');
+        alert(`🎉 Thank you ${name}! Your order (${newOrder.orderId}) has been saved to the database spreadsheet.`);
+      } catch (err) {
+        alert("⚠️ Connection error. Could not record order.");
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Confirm & Place Order`;
+      }
+    }
+
+    // --- ADMIN PANEL CONTROLLERS ---
+    function openAdminLoginModal() {
+      openModal('admin-login-modal');
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('admin-pass').value;
+      if (pass === ADMIN_PASSWORD_HASH) {
+        closeModal('admin-login-modal');
+        document.getElementById('admin-pass').value = '';
+        document.getElementById('client-view').style.display = 'none';
+        document.getElementById('admin-view').style.display = 'block';
+        fetchOrders();
+        fetchProducts();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert('❌ Incorrect Admin Password!');
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById('admin-view').style.display = 'none';
+      document.getElementById('client-view').style.display = 'block';
+      fetchProducts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchAdminTab(tabName, event) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+
+      if(tabName === 'dashboard') renderAdminDashboard();
+      if(tabName === 'orders') renderAdminOrders();
+      if(tabName === 'products') renderAdminProducts();
+    }
+
+    function renderAdminDashboard() {
+      let revenue = 0;
+      let pending = 0, accepted = 0, transit = 0, delivered = 0, cancelled = 0, returned = 0;
+
+      orders.forEach(o => {
+        const status = String(o.status).toLowerCase();
+        if(status === 'delivered') revenue += Number(o.totalAmount || 0);
+        if(status === 'pending') pending++;
+        if(status === 'order accepted') accepted++;
+        if(status === 'in transit') transit++;
+        if(status === 'delivered') delivered++;
+        if(status === 'order cancelled') cancelled++;
+        if(status === 'returned') returned++;
+      });
+
+      const categories = new Set(products.map(p => p.category));
+
+      document.getElementById('dash-revenue').innerText = `${revenue} Tk`;
+      document.getElementById('dash-orders').innerText = orders.length;
+      document.getElementById('dash-pending').innerText = pending;
+      document.getElementById('dash-accepted').innerText = accepted;
+      document.getElementById('dash-transit').innerText = transit;
+      document.getElementById('dash-delivered').innerText = delivered;
+      document.getElementById('dash-cancelled').innerText = cancelled;
+      document.getElementById('dash-returned').innerText = returned;
+      document.getElementById('dash-products').innerText = products.length;
+      document.getElementById('dash-categories').innerText = categories.size;
+    }
+
+    function renderAdminOrders() {
+      const tbody = document.getElementById('admin-orders-tbody');
+      tbody.innerHTML = '';
+
+      if (orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No orders recorded in spreadsheet yet.</td></tr>`;
+        return;
+      }
+
+      orders.forEach(o => {
+        const tr = document.createElement('tr');
+        const status = String(o.status || 'pending').toLowerCase();
+        
+        let badgeClass = 'badge-pending';
+        if(status === 'order accepted') badgeClass = 'badge-accepted';
+        if(status === 'in transit') badgeClass = 'badge-transit';
+        if(status === 'delivered') badgeClass = 'badge-delivered';
+        if(status === 'order cancelled') badgeClass = 'badge-cancelled';
+        if(status === 'returned') badgeClass = 'badge-returned';
+
+        tr.innerHTML = `
+          <td><strong>${o.orderId}</strong><br><small style="color:#888;">${o.date || ''}</small></td>
+          <td>
+            <strong>${o.customerName || o.name || ''}</strong><br>
+            📞 ${o.customerPhone || o.phone || ''}<br>
+            📍 ${o.customerAddress || o.address || ''}
+          </td>
+          <td>${o.items || 'N/A'}</td>
+          <td>
+            ${o.paymentMethod || ''}<br>
+            <small>TxID: <strong>${o.transactionId || 'N/A'}</strong></small>
+          </td>
+          <td><strong>${o.totalAmount} Tk</strong></td>
+          <td><span class="badge ${badgeClass}">${status.toUpperCase()}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAdminProducts() {
+      const tbody = document.getElementById('admin-products-tbody');
+      tbody.innerHTML = '';
+
+      products.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="${p.image}" width="50" height="50" style="object-fit:cover; border-radius:4px;" onerror="this.src='https://via.placeholder.com/50'"></td>
+          <td><strong>${p.name}</strong></td>
+          <td>${p.category}</td>
+          <td>${p.price} Tk</td>
+          <td><small>${String(p.description || '').substring(0, 50)}...</small></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function previewUploadImage(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          uploadedImageData = event.target.result;
+          const preview = document.getElementById('upload-preview');
+          preview.src = uploadedImageData;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openAddProductModal() {
+      document.getElementById('product-form').reset();
+      document.getElementById('upload-preview').style.display = 'none';
+      uploadedImageData = '';
+      openModal('product-form-modal');
+    }
+
+    // POST PRODUCT TO DATABASE SHEET
+    async function handleSaveProduct(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-prod');
+      
+      const imageUrlInput = document.getElementById('prod-img-url').value.trim();
+      const finalImage = imageUrlInput || uploadedImageData;
+
+      if (!finalImage) {
+        alert("Please enter an Image Link or upload a File!");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Writing to Spreadsheet...`;
+
+      const newProduct = {
+        id: 'p-' + Date.now(),
+        name: document.getElementById('prod-name').value.trim(),
+        category: document.getElementById('prod-category').value,
+        price: Number(document.getElementById('prod-price').value),
+        image: finalImage,
+        description: document.getElementById('prod-desc').value.trim()
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'addProduct', product: newProduct })
+        });
+
+        closeModal('product-form-modal');
+        await fetchProducts();
+        renderAdminProducts();
+      } catch (err) {
+        alert("⚠️ Could not add product to spreadsheet.");
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Save Product to Database`;
+      }
+    }
+
+    // Modal Display Helpers
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+  </script>
 </body>
 </html>
