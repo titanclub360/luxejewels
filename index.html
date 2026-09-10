@@ -592,7 +592,7 @@
       font-size: 0.85rem;
     }
 
-    /* --- Admin Styles & Internal Refresh Buttons --- */
+    /* --- Admin Styles --- */
     #admin-view {
       display: none;
       background: #f4f6f9;
@@ -607,35 +607,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .admin-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .btn-admin-refresh {
-      background: #2e7d32;
-      color: #ffffff;
-      padding: 8px 18px;
-      border-radius: 25px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: none;
-    }
-
-    .btn-admin-refresh:hover {
-      background: #236327;
-    }
-
-    .spin-icon {
-      animation: fa-spin 1s infinite linear;
     }
 
     .dashboard-grid {
@@ -779,7 +750,7 @@
       color: var(--primary-dark);
     }
 
-    /* --- Standardized Warning Modals --- */
+    /* --- Standardized Warning Modals (Delete & Customer Checkout) --- */
     .warning-modal-card {
       background: #ffffff;
       border-radius: 20px;
@@ -895,7 +866,6 @@
       .product-detail-body { grid-template-columns: 1fr; }
       .hero h1 { font-size: 2.2rem; }
       .footer-bottom { flex-direction: column; text-align: center; }
-      .admin-header { flex-direction: column; align-items: flex-start; gap: 15px; }
     }
   </style>
 </head>
@@ -1022,15 +992,9 @@
   <div id="admin-view">
     <div class="admin-header">
       <h2><i class="fa-solid fa-user-shield"></i> Store Administration Panel</h2>
-      <div class="admin-controls">
-        <!-- Internal Refresh System Button -->
-        <button class="btn-admin-refresh" id="admin-refresh-btn" onclick="refreshAdminData()">
-          <i class="fa-solid fa-rotate" id="admin-refresh-icon"></i> Refresh Data
-        </button>
-        <button class="btn-admin-toggle" onclick="logoutAdmin()" style="border-color:#fff; color:#fff;">
-          <i class="fa-solid fa-right-from-bracket"></i> Exit Admin
-        </button>
-      </div>
+      <button class="btn-admin-toggle" onclick="logoutAdmin()" style="border-color:#fff; color:#fff;">
+        <i class="fa-solid fa-right-from-bracket"></i> Exit Admin
+      </button>
     </div>
 
     <div class="container">
@@ -1089,12 +1053,7 @@
 
       <!-- Tab 2: Orders Management -->
       <div id="tab-orders" class="admin-section">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-          <h3>Customer Orders</h3>
-          <button class="action-btn btn-edit" style="padding: 6px 12px; font-size: 0.8rem;" onclick="refreshAdminData()">
-            <i class="fa-solid fa-arrows-rotate"></i> Sync Orders
-          </button>
-        </div>
+        <h3 style="margin-bottom: 15px;">Customer Orders</h3>
         <div class="table-responsive">
           <table>
             <thead>
@@ -1120,14 +1079,9 @@
       <div id="tab-products" class="admin-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
           <h3>Product Catalog</h3>
-          <div style="display: flex; gap: 10px;">
-            <button class="action-btn btn-edit" style="padding: 8px 14px; font-size: 0.85rem;" onclick="refreshAdminData()">
-              <i class="fa-solid fa-arrows-rotate"></i> Sync Inventory
-            </button>
-            <button class="btn-order-now" style="width: auto; padding: 8px 16px;" onclick="openAddProductModal()">
-              <i class="fa-solid fa-plus"></i> Add New Product
-            </button>
-          </div>
+          <button class="btn-order-now" style="width: auto; padding: 8px 16px;" onclick="openAddProductModal()">
+            <i class="fa-solid fa-plus"></i> Add New Product
+          </button>
         </div>
         <div class="table-responsive">
           <table>
@@ -1422,28 +1376,6 @@
       }
     }
 
-    // --- INTERNAL REFRESH SYSTEM ---
-    async function refreshAdminData() {
-      const btn = document.getElementById('admin-refresh-btn');
-      const icon = document.getElementById('admin-refresh-icon');
-
-      btn.disabled = true;
-      icon.classList.add('spin-icon');
-
-      try {
-        await Promise.all([fetchOrders(), fetchProducts()]);
-        renderAdminProducts();
-        renderAdminOrders();
-        renderAdminDashboard();
-      } catch (err) {
-        alert("⚠️ Refresh error. Check network connection.");
-        console.error(err);
-      } finally {
-        btn.disabled = false;
-        icon.classList.remove('spin-icon');
-      }
-    }
-
     // --- CLIENT UI RENDERERS ---
     function renderProducts() {
       const grid = document.getElementById('product-grid');
@@ -1703,7 +1635,8 @@
         document.getElementById('admin-pass').value = '';
         document.getElementById('client-view').style.display = 'none';
         document.getElementById('admin-view').style.display = 'block';
-        refreshAdminData();
+        fetchOrders();
+        fetchProducts();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         alert('❌ Incorrect Admin Password!');
