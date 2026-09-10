@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LuxeJewels | Premium Jewelry Store & Admin</title>
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #d4af37;
+      --primary-dark: #aa8828;
+      --secondary: #1a1a1a;
+      --light-bg: #fdfbf7;
+      --card-bg: #ffffff;
+      --text-main: #2c2c2c;
+      --text-muted: #666666;
+      --border-color: #eae1d0;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --info: #3498db;
+      --warning: #f39c12;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background-color: var(--light-bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4, .brand-font {
+      font-family: 'Playfair Display', serif;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: var(--transition);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    /* --- Navigation --- */
+    .navbar {
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 1rem 5%;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .btn-cart {
+      background: var(--primary);
+      color: var(--secondary);
+      padding: 8px 16px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      position: relative;
+    }
+
+    .btn-cart:hover {
+      background: var(--primary-dark);
+      color: #fff;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-admin-toggle {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 18px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .btn-admin-toggle:hover {
+      background: var(--primary);
+      color: var(--secondary);
+    }
+
+    /* --- Hero Banner --- */
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+      height: 55vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+      padding: 0 20px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    /* --- Section Containers --- */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .section-title h2 {
+      font-size: 2.5rem;
+      color: var(--secondary);
+    }
+
+    .section-title::after {
+      content: '';
+      width: 80px;
+      height: 3px;
+      background: var(--primary);
+      display: block;
+      margin: 10px auto 0;
+    }
+
+    /* --- Filter Controls --- */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 20px;
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* --- Product Grid --- */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 30px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .product-category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--primary-dark);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .product-title {
+      font-size: 1.2rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+
+    .product-price {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 15px;
+    }
+
+    .btn-view {
+      width: 100%;
+      padding: 10px;
+      background: var(--secondary);
+      color: var(--primary);
+      border-radius: 6px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-view:hover {
+      background: #000;
+      color: #fff;
+    }
+
+    /* --- Footer Styles --- */
+    footer {
+      background-color: var(--secondary);
+      color: #b0b0b0;
+      padding: 60px 0 20px;
+      margin-top: 60px;
+      border-top: 3px solid var(--primary);
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 40px;
+    }
+
+    .footer-col h3 {
+      color: #fff;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      position: relative;
+      padding-bottom: 8px;
+    }
+
+    .footer-col h3::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--primary);
+    }
+
+    .footer-col p {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin-bottom: 15px;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      color: #b0b0b0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+      transform: translateX(5px);
+    }
+
+    .contact-info li {
+      display: flex;
+      gap: 12px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+
+    .contact-info i {
+      color: var(--primary);
+      margin-top: 4px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .social-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .social-icon:hover {
+      background: var(--primary);
+      color: var(--secondary);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 40px auto 0;
+      padding: 20px 20px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    /* --- Modals & Drawer --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+      position: relative;
+      animation: modalFadeIn 0.3s ease;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8rem;
+      color: #888;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .close-modal:hover { color: #000; }
+
+    /* Product Detail Layout */
+    .product-detail-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      padding: 30px;
+    }
+
+    .detail-img {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .detail-content h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .detail-price {
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .detail-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .btn-order-now {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 6px;
+    }
+
+    .btn-order-now:hover { background: var(--primary-dark); }
+
+    /* Cart Drawer */
+    .cart-drawer-card {
+      max-width: 500px;
+      padding: 25px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .cart-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .cart-item-info { flex: 1; }
+    .cart-item-title { font-weight: 600; font-size: 0.95rem; }
+    .cart-item-price { color: var(--primary-dark); font-weight: 700; font-size: 0.9rem; }
+
+    .qty-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      background: #eee;
+      border-radius: 4px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qty-btn:hover { background: var(--primary); color: #fff; }
+
+    .btn-cart-remove {
+      color: var(--danger);
+      background: none;
+      font-size: 1.1rem;
+    }
+
+    /* Order Form Styles */
+    .order-form-container { padding: 30px; }
+    .form-group { margin-bottom: 15px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--secondary);
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .payment-summary {
+      background: #fdfbf7;
+      border: 1px dashed var(--primary);
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .summary-row.total {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--secondary);
+      border-top: 1px solid #ddd;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    .payment-instructions {
+      background: #fff8e7;
+      border-left: 4px solid var(--primary);
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      font-size: 0.85rem;
+    }
+
+    /* --- Admin Styles --- */
+    #admin-view {
+      display: none;
+      background: #f4f6f9;
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    .admin-header {
+      background: var(--secondary);
+      color: #fff;
+      padding: 15px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .dash-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      border-left: 4px solid var(--primary);
+    }
+
+    .dash-card h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .dash-card .number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background: none;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+
+    /* Admin Tables */
+    .table-responsive {
+      overflow-x: auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--secondary);
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-accepted { background: #dbeafe; color: #1e40af; }
+    .badge-transit { background: #e0e7ff; color: #3730a3; }
+    .badge-delivered { background: #d1fae5; color: #065f46; }
+    .badge-cancelled { background: #fee2e2; color: #991b1b; }
+    .badge-returned { background: #f3e8ff; color: #6b21a8; }
+
+    .action-btn {
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      margin-right: 5px;
+      color: #fff;
+    }
+
+    .btn-edit { background: var(--info); }
+    .btn-delete { background: var(--danger); }
+
+    .order-action-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .login-box {
+      max-width: 400px;
+      margin: 100px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .img-preview {
+      width: 100%;
+      max-height: 150px;
+      object-fit: contain;
+      margin-top: 10px;
+      border-radius: 6px;
+      display: none;
+      background: #f0f0f0;
+    }
+
+    @media(max-width: 768px) {
+      .product-detail-body { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.2rem; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== CLIENT STORE VIEW ==================== -->
+  <div id="client-view">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="logo">
+        <i class="fa-solid fa-gem"></i> LuxeJewels
+      </div>
+      <div class="nav-links">
+        <button class="btn-cart" onclick="openCartModal()">
+          <i class="fa-solid fa-cart-shopping"></i> Cart
+          <span class="cart-badge" id="cart-count">0</span>
+        </button>
+        
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+      <h1>Timeless Elegance & Beauty</h1>
+      <p>Discover our exclusive handcrafted jewelry collections designed to make every moment sparkle.</p>
+    </header>
+
+    <!-- Products Container -->
+    <main class="container">
+      <div class="section-title">
+        <h2>Our Exclusive Collection</h2>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="filter-bar" id="category-filters">
+        <button class="filter-btn active" onclick="filterCategory('All')">All</button>
+        <button class="filter-btn" onclick="filterCategory('Rings')">Rings</button>
+        <button class="filter-btn" onclick="filterCategory('Necklaces')">Necklaces</button>
+        <button class="filter-btn" onclick="filterCategory('Earrings')">Earrings</button>
+        <button class="filter-btn" onclick="filterCategory('Bracelets')">Bracelets</button>
+      </div>
+
+      <!-- Grid -->
+      <div class="product-grid" id="product-grid"></div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+      <div class="footer-container">
+        <!-- Col 1: About -->
+        <div class="footer-col">
+          <div class="logo" style="margin-bottom: 15px; font-size: 1.5rem;">
+            <i class="fa-solid fa-gem"></i> LuxeJewels
+          </div>
+          <p>Exquisite fine jewelry designed with precision, authenticity, and elegance. Elevate your everyday style with our handcrafted collections.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest-p"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Quick Links -->
+        <div class="footer-col">
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="#" onclick="filterCategory('All')"><i class="fa-solid fa-angle-right"></i> All Products</a></li>
+            <li><a href="#" onclick="filterCategory('Rings')"><i class="fa-solid fa-angle-right"></i> Diamond Rings</a></li>
+            <li><a href="#" onclick="filterCategory('Necklaces')"><i class="fa-solid fa-angle-right"></i> Gold Necklaces</a></li>
+            <li><a href="#" onclick="openCartModal()"><i class="fa-solid fa-angle-right"></i> View Cart</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Customer Care -->
+        <div class="footer-col">
+          <h3>Customer Service</h3>
+          <ul class="footer-links">
+            <li><a href="#"><i class="fa-solid fa-angle-right"></i> Shipping & Delivery</a></li>
+            <li><a href="#"><i class="fa-solid fa-angle-right"></i> Return & Exchange Policy</a></li>
+            <li><a href="#"><i class="fa-solid fa-angle-right"></i> Jewelry Care Guide</a></li>
+            <li><a href="#"><i class="fa-solid fa-angle-right"></i> Certificate of Authenticity</a></li>
+            <li><a href="#"><i class="fa-solid fa-angle-right"></i> Terms & Conditions</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact -->
+        <div class="footer-col">
+          <h3>Contact Us</h3>
+          <ul class="contact-info">
+            <li>
+              <i class="fa-solid fa-location-dot"></i>
+              <span>House 42, Road 11, Block D, Banani, Dhaka, Bangladesh</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-phone"></i>
+              <span>+880 1771-516911</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-envelope"></i>
+              <span>support@luxejewels.com</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-clock"></i>
+              <span>Sat - Thu: 10:00 AM - 8:00 PM</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 LuxeJewels. All Rights Reserved. Crafted with Elegance.</p>
+        <p>
+          <a href="javascript:void(0)" onclick="openAdminLoginModal()" style="color:var(--primary); text-decoration: underline;">
+            <i class="fa-solid fa-lock"></i> Staff Login
+          </a>
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== ADMIN PANEL VIEW ==================== -->
+  <div id="admin-view">
+    <div class="admin-header">
+      <h2><i class="fa-solid fa-user-shield"></i> Store Administration Panel</h2>
+      <button class="btn-admin-toggle" onclick="logoutAdmin()" style="border-color:#fff; color:#fff;">
+        <i class="fa-solid fa-right-from-bracket"></i> Exit Admin
+      </button>
+    </div>
+
+    <div class="container">
+      <!-- Admin Navigation Tabs -->
+      <div class="admin-tabs">
+        <button class="tab-btn active" onclick="switchAdminTab('dashboard')">Dashboard</button>
+        <button class="tab-btn" onclick="switchAdminTab('orders')">Orders Management</button>
+        <button class="tab-btn" onclick="switchAdminTab('products')">Product Inventory</button>
+      </div>
+
+      <!-- Tab 1: Dashboard -->
+      <div id="tab-dashboard" class="admin-section active">
+        <div class="dashboard-grid">
+          <div class="dash-card">
+            <h4>Total Revenue</h4>
+            <div class="number" id="dash-revenue">0 Tk</div>
+          </div>
+          <div class="dash-card">
+            <h4>Total Orders</h4>
+            <div class="number" id="dash-orders">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>Pending Orders</h4>
+            <div class="number" id="dash-pending">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>Accepted Orders</h4>
+            <div class="number" id="dash-accepted">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>In Transit</h4>
+            <div class="number" id="dash-transit">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>Delivered Orders</h4>
+            <div class="number" id="dash-delivered">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>Cancelled Orders</h4>
+            <div class="number" id="dash-cancelled">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>Returned Orders</h4>
+            <div class="number" id="dash-returned">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>Total Products</h4>
+            <div class="number" id="dash-products">0</div>
+          </div>
+          <div class="dash-card">
+            <h4>Total Categories</h4>
+            <div class="number" id="dash-categories">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Orders -->
+      <div id="tab-orders" class="admin-section">
+        <h3 style="margin-bottom: 15px;">Customer Orders</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Details</th>
+                <th>Items & Details</th>
+                <th>Payment & TxID</th>
+                <th>Total Price</th>
+                <th>Order Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3: Products -->
+      <div id="tab-products" class="admin-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h3>Product Catalog</h3>
+          <button class="btn-order-now" style="width: auto; padding: 8px 16px;" onclick="openAddProductModal()">
+            <i class="fa-solid fa-plus"></i> Add New Product
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-products-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Product Detail Modal -->
+  <div class="modal-overlay" id="product-detail-modal">
+    <div class="modal-card">
+      <span class="close-modal" onclick="closeModal('product-detail-modal')">&times;</span>
+      <div class="product-detail-body">
+        <img id="modal-detail-img" src="" alt="Product" class="detail-img">
+        <div class="detail-content">
+          <p id="modal-detail-cat" class="product-category"></p>
+          <h2 id="modal-detail-title"></h2>
+          <div id="modal-detail-price" class="detail-price"></div>
+          <p id="modal-detail-desc" class="detail-desc"></p>
+          <button class="btn-order-now" id="modal-add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Cart Modal -->
+  <div class="modal-overlay" id="cart-modal">
+    <div class="modal-card cart-drawer-card">
+      <span class="close-modal" onclick="closeModal('cart-modal')">&times;</span>
+      <h2 style="margin-bottom: 15px;"><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</h2>
+      
+      <div id="cart-items-container" style="max-height: 300px; overflow-y: auto;"></div>
+
+      <div class="payment-summary" style="margin-top: 20px;">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span id="cart-subtotal">0 Tk</span>
+        </div>
+        <div class="summary-row">
+          <span>Service Charge:</span>
+          <span>120 Tk</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total Amount:</span>
+          <span id="cart-total">0 Tk</span>
+        </div>
+      </div>
+
+      <button class="btn-order-now" onclick="proceedToCheckout()">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- 3. Checkout Modal -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-card">
+      <span class="close-modal" onclick="closeModal('checkout-modal')">&times;</span>
+      <div class="order-form-container">
+        <h2 style="margin-bottom: 5px;">Complete Your Order</h2>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Please fill in your shipping & payment details.</p>
+
+        <form id="checkout-form" onsubmit="handlePlaceOrder(event)">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="cust-name" required placeholder="Enter full name">
+          </div>
+
+          <div class="form-group">
+            <label>Phone Number *</label>
+            <input type="tel" id="cust-phone" required placeholder="017XXXXXXXX">
+          </div>
+
+          <div class="form-group">
+            <label>Full Address *</label>
+            <textarea id="cust-address" rows="2" required placeholder="House, Road, Area, City..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Payment Method *</label>
+            <select id="pay-method" onchange="togglePaymentFields()" required>
+              <option value="Bkash/Rocket Payment">Bkash / Rocket Payment</option>
+              <option value="Cash on Delivery">Cash on Delivery</option>
+            </select>
+          </div>
+
+          <div id="bkash-instructions" class="payment-instructions">
+            <i class="fa-solid fa-info-circle"></i> Please send total amount to <strong>01771-516911</strong> (Personal/Merchant) and provide the Transaction ID below.
+          </div>
+
+          <div class="form-group" id="txid-group">
+            <label>Transaction ID *</label>
+            <input type="text" id="cust-txid" placeholder="e.g. 9J7A6KLS21" required>
+          </div>
+
+          <div class="payment-summary">
+            <div class="summary-row">
+              <span>Cart Subtotal:</span>
+              <span id="summary-prod-price">0 Tk</span>
+            </div>
+            <div class="summary-row">
+              <span>Service Charge Fee:</span>
+              <span>120 Tk</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total Amount:</span>
+              <span id="summary-total-price">0 Tk</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-order-now">Confirm & Place Order</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Admin Login Modal -->
+  <div class="modal-overlay" id="admin-login-modal">
+    <div class="modal-card login-box">
+      <span class="close-modal" onclick="closeModal('admin-login-modal')">&times;</span>
+      <h2 style="margin-bottom: 10px;"><i class="fa-solid fa-lock"></i> Admin Login</h2>
+      <p style="font-size:0.85rem; color:#666; margin-bottom: 20px;">Enter administrative password to continue.</p>
+      
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <input type="password" id="admin-pass" placeholder="Enter Password" required>
+        </div>
+        <button type="submit" class="btn-order-now">Login to Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Add/Edit Product Modal -->
+  <div class="modal-overlay" id="product-form-modal">
+    <div class="modal-card">
+      <span class="close-modal" onclick="closeModal('product-form-modal')">&times;</span>
+      <div style="padding: 30px;">
+        <h2 id="product-modal-title" style="margin-bottom: 20px;">Add New Product</h2>
+        <form id="product-form" onsubmit="handleSaveProduct(event)">
+          <input type="hidden" id="prod-id">
+          
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" id="prod-name" required placeholder="e.g. Diamond Halo Ring">
+          </div>
+
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="prod-category" required>
+              <option value="Rings">Rings</option>
+              <option value="Necklaces">Necklaces</option>
+              <option value="Earrings">Earrings</option>
+              <option value="Bracelets">Bracelets</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Price (Tk) *</label>
+            <input type="number" id="prod-price" required placeholder="e.g. 2500">
+          </div>
+
+          <div class="form-group">
+            <label>Upload Product Image *</label>
+            <input type="file" id="prod-img-file" accept="image/*" onchange="previewUploadImage(event)">
+            <img id="upload-preview" class="img-preview" alt="Image Preview">
+          </div>
+
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea id="prod-desc" rows="3" required placeholder="Write product details..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-order-now">Save Product</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // Constants & Default Data
+    const SERVICE_CHARGE = 120;
+    const ADMIN_PASSWORD_HASH = "admin123";
+
+    const defaultProducts = [
+      {
+        id: "p1",
+        name: "Royal Diamond Solitaire Ring",
+        category: "Rings",
+        price: 4500,
+        image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80",
+        description: "An elegant classic solitaire ring set in sparkling platinum finish. Crafted for timeless perfection."
+      },
+      {
+        id: "p2",
+        name: "Emerald Grace Gold Necklace",
+        category: "Necklaces",
+        price: 8900,
+        image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80",
+        description: "Handcrafted 22k gold plated necklace featuring natural green emerald gemstones."
+      },
+      {
+        id: "p3",
+        name: "Crystal Drop Earring Pair",
+        category: "Earrings",
+        price: 2200,
+        image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80",
+        description: "Lightweight and stunning crystal drop earrings designed to highlight your elegance."
+      }
+    ];
+
+    // Data State Variables
+    let products = JSON.parse(localStorage.getItem('luxe_products')) || defaultProducts;
+    let orders = JSON.parse(localStorage.getItem('luxe_orders')) || [];
+    let cart = JSON.parse(localStorage.getItem('luxe_cart')) || [];
+    let selectedProduct = null;
+    let activeCategory = 'All';
+    let uploadedImageData = '';
+
+    // Save Data Helpers
+    function saveData() {
+      localStorage.setItem('luxe_products', JSON.stringify(products));
+      localStorage.setItem('luxe_orders', JSON.stringify(orders));
+      localStorage.setItem('luxe_cart', JSON.stringify(cart));
+      updateCartBadge();
+    }
+
+    // Initialize App
+    window.onload = function() {
+      if(!localStorage.getItem('luxe_products')) saveData();
+      renderProducts();
+      updateCartBadge();
+    };
+
+    // --- CLIENT UI FUNCTIONS ---
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+
+      const filtered = activeCategory === 'All' 
+        ? products 
+        : products.filter(p => p.category === activeCategory);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found in this category.</p>`;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
+          <div class="product-info">
+            <div class="product-category">${p.category}</div>
+            <h3 class="product-title">${p.name}</h3>
+            <div class="product-price">${p.price} Tk</div>
+            <button class="btn-view" onclick="openProductDetail('${p.id}')">View Details</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText === cat);
+      });
+      renderProducts();
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    }
+
+    function openProductDetail(id) {
+      selectedProduct = products.find(p => p.id === id);
+      if(!selectedProduct) return;
+
+      document.getElementById('modal-detail-img').src = selectedProduct.image;
+      document.getElementById('modal-detail-cat').innerText = selectedProduct.category;
+      document.getElementById('modal-detail-title').innerText = selectedProduct.name;
+      document.getElementById('modal-detail-price').innerText = `${selectedProduct.price} Tk`;
+      document.getElementById('modal-detail-desc').innerText = selectedProduct.description;
+
+      const addBtn = document.getElementById('modal-add-cart-btn');
+      addBtn.onclick = function() {
+        addToCart(selectedProduct.id);
+        closeModal('product-detail-modal');
+        openCartModal();
+      };
+
+      openModal('product-detail-modal');
+    }
+
+    // CART FUNCTIONS
+    function addToCart(productId) {
+      const existing = cart.find(item => item.id === productId);
+      if(existing) {
+        existing.quantity += 1;
+      } else {
+        const prod = products.find(p => p.id === productId);
+        if(prod) {
+          cart.push({ ...prod, quantity: 1 });
+        }
+      }
+      saveData();
+    }
+
+    function updateCartQuantity(productId, delta) {
+      const item = cart.find(i => i.id === productId);
+      if(item) {
+        item.quantity += delta;
+        if(item.quantity <= 0) {
+          cart = cart.filter(i => i.id !== productId);
+        }
+        saveData();
+        renderCartModal();
+      }
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(i => i.id !== productId);
+      saveData();
+      renderCartModal();
+    }
+
+    function updateCartBadge() {
+      const count = cart.reduce((total, item) => total + item.quantity, 0);
+      document.getElementById('cart-count').innerText = count;
+    }
+
+    function openCartModal() {
+      renderCartModal();
+      openModal('cart-modal');
+    }
+
+    function renderCartModal() {
+      const container = document.getElementById('cart-items-container');
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = `<p style="text-align:center; padding:20px; color:#888;">Your cart is empty.</p>`;
+        document.getElementById('cart-subtotal').innerText = '0 Tk';
+        document.getElementById('cart-total').innerText = '0 Tk';
+        return;
+      }
+
+      let subtotal = 0;
+
+      cart.forEach(item => {
+        subtotal += item.price * item.quantity;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">${item.price} Tk</div>
+            <div class="qty-btn-group">
+              <button class="qty-btn" onclick="updateCartQuantity('${item.id}', -1)">-</button>
+              <span>${item.quantity}</span>
+              <button class="qty-btn" onclick="updateCartQuantity('${item.id}', 1)">+</button>
+            </div>
+          </div>
+          <button class="btn-cart-remove" onclick="removeFromCart('${item.id}')"><i class="fa-solid fa-trash-can"></i></button>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('cart-subtotal').innerText = `${subtotal} Tk`;
+      document.getElementById('cart-total').innerText = `${subtotal + SERVICE_CHARGE} Tk`;
+    }
+
+    function proceedToCheckout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      closeModal('cart-modal');
+      openCheckoutModal();
+    }
+
+    function openCheckoutModal() {
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const totalPrice = subtotal + SERVICE_CHARGE;
+
+      document.getElementById('summary-prod-price').innerText = `${subtotal} Tk`;
+      document.getElementById('summary-total-price').innerText = `${totalPrice} Tk`;
+
+      document.getElementById('checkout-form').reset();
+      togglePaymentFields();
+
+      openModal('checkout-modal');
+    }
+
+    function togglePaymentFields() {
+      const method = document.getElementById('pay-method').value;
+      const txGroup = document.getElementById('txid-group');
+      const txInput = document.getElementById('cust-txid');
+      const bkashInst = document.getElementById('bkash-instructions');
+
+      if (method === 'Bkash/Rocket Payment') {
+        txGroup.style.display = 'block';
+        txInput.required = true;
+        bkashInst.style.display = 'block';
+      } else {
+        txGroup.style.display = 'none';
+        txInput.required = false;
+        bkashInst.style.display = 'none';
+      }
+    }
+
+    function handlePlaceOrder(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+      const address = document.getElementById('cust-address').value.trim();
+      const method = document.getElementById('pay-method').value;
+      const txid = document.getElementById('cust-txid').value.trim();
+
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const totalAmount = subtotal + SERVICE_CHARGE;
+
+      const itemsSummary = cart.map(i => `${i.name} (x${i.quantity})`).join(', ');
+
+      const newOrder = {
+        orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        customer: { name, phone, address },
+        items: itemsSummary,
+        cartItems: cart,
+        serviceCharge: SERVICE_CHARGE,
+        totalAmount: totalAmount,
+        paymentMethod: method,
+        transactionId: method === 'Bkash/Rocket Payment' ? txid : 'N/A (COD)',
+        status: 'pending',
+        date: new Date().toLocaleString()
+      };
+
+      orders.unshift(newOrder);
+      cart = [];
+      saveData();
+
+      closeModal('checkout-modal');
+      alert(`🎉 Thank you ${name}! Your order (${newOrder.orderId}) has been placed successfully.`);
+    }
+
+    // --- ADMIN PANEL FUNCTIONS ---
+    function openAdminLoginModal() {
+      openModal('admin-login-modal');
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('admin-pass').value;
+      if (pass === ADMIN_PASSWORD_HASH) {
+        closeModal('admin-login-modal');
+        document.getElementById('admin-pass').value = '';
+        document.getElementById('client-view').style.display = 'none';
+        document.getElementById('admin-view').style.display = 'block';
+        renderAdminDashboard();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert('❌ Incorrect Admin Password!');
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById('admin-view').style.display = 'none';
+      document.getElementById('client-view').style.display = 'block';
+      renderProducts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchAdminTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+
+      if(tabName === 'dashboard') renderAdminDashboard();
+      if(tabName === 'orders') renderAdminOrders();
+      if(tabName === 'products') renderAdminProducts();
+    }
+
+    function renderAdminDashboard() {
+      let revenue = 0;
+      let pending = 0, accepted = 0, transit = 0, delivered = 0, cancelled = 0, returned = 0;
+
+      orders.forEach(o => {
+        if(o.status === 'delivered') revenue += o.totalAmount;
+        if(o.status === 'pending') pending++;
+        if(o.status === 'order accepted') accepted++;
+        if(o.status === 'in transit') transit++;
+        if(o.status === 'delivered') delivered++;
+        if(o.status === 'order cancelled') cancelled++;
+        if(o.status === 'returned') returned++;
+      });
+
+      const categories = new Set(products.map(p => p.category));
+
+      document.getElementById('dash-revenue').innerText = `${revenue} Tk`;
+      document.getElementById('dash-orders').innerText = orders.length;
+      document.getElementById('dash-pending').innerText = pending;
+      document.getElementById('dash-accepted').innerText = accepted;
+      document.getElementById('dash-transit').innerText = transit;
+      document.getElementById('dash-delivered').innerText = delivered;
+      document.getElementById('dash-cancelled').innerText = cancelled;
+      document.getElementById('dash-returned').innerText = returned;
+      document.getElementById('dash-products').innerText = products.length;
+      document.getElementById('dash-categories').innerText = categories.size;
+    }
+
+    function renderAdminOrders() {
+      const tbody = document.getElementById('admin-orders-tbody');
+      tbody.innerHTML = '';
+
+      if (orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No orders placed yet.</td></tr>`;
+        return;
+      }
+
+      orders.forEach(o => {
+        const tr = document.createElement('tr');
+        
+        let badgeClass = 'badge-pending';
+        if(o.status === 'order accepted') badgeClass = 'badge-accepted';
+        if(o.status === 'in transit') badgeClass = 'badge-transit';
+        if(o.status === 'delivered') badgeClass = 'badge-delivered';
+        if(o.status === 'order cancelled') badgeClass = 'badge-cancelled';
+        if(o.status === 'returned') badgeClass = 'badge-returned';
+
+        tr.innerHTML = `
+          <td><strong>${o.orderId}</strong><br><small style="color:#888;">${o.date}</small></td>
+          <td>
+            <strong>${o.customer.name}</strong><br>
+            📞 ${o.customer.phone}<br>
+            📍 ${o.customer.address}
+          </td>
+          <td>${o.items || (o.product ? o.product.name : 'N/A')}</td>
+          <td>
+            ${o.paymentMethod}<br>
+            <small>TxID: <strong>${o.transactionId}</strong></small>
+          </td>
+          <td><strong>${o.totalAmount} Tk</strong></td>
+          <td><span class="badge ${badgeClass}">${o.status.toUpperCase()}</span></td>
+          <td>
+            <div class="order-action-cell">
+              <select onchange="updateOrderStatus('${o.orderId}', this.value)" style="padding: 4px; font-size: 0.8rem;">
+                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="order accepted" ${o.status === 'order accepted' ? 'selected' : ''}>Order Accepted</option>
+                <option value="in transit" ${o.status === 'in transit' ? 'selected' : ''}>In Transit</option>
+                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="order cancelled" ${o.status === 'order cancelled' ? 'selected' : ''}>Order Cancelled</option>
+                <option value="returned" ${o.status === 'returned' ? 'selected' : ''}>Returned</option>
+              </select>
+              <button class="action-btn btn-delete" title="Delete Order" onclick="deleteOrder('${o.orderId}')">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => o.orderId === orderId);
+      if(order) {
+        order.status = newStatus;
+        saveData();
+        renderAdminOrders();
+      }
+    }
+
+    // Delete Order with Confirmation Dialog
+    function deleteOrder(orderId) {
+      const confirmed = confirm(`⚠️ WARNING: Are you sure you want to permanently delete order "${orderId}"?\n\nThis action cannot be undone!`);
+      if (confirmed) {
+        orders = orders.filter(o => o.orderId !== orderId);
+        saveData();
+        renderAdminOrders();
+      }
+    }
+
+    function renderAdminProducts() {
+      const tbody = document.getElementById('admin-products-tbody');
+      tbody.innerHTML = '';
+
+      products.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="${p.image}" width="50" height="50" style="object-fit:cover; border-radius:4px;" onerror="this.src='https://via.placeholder.com/50'"></td>
+          <td><strong>${p.name}</strong></td>
+          <td>${p.category}</td>
+          <td>${p.price} Tk</td>
+          <td><small>${p.description.substring(0, 40)}...</small></td>
+          <td>
+            <button class="action-btn btn-edit" onclick="openEditProductModal('${p.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="action-btn btn-delete" onclick="deleteProduct('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function previewUploadImage(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          uploadedImageData = event.target.result;
+          const preview = document.getElementById('upload-preview');
+          preview.src = uploadedImageData;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openAddProductModal() {
+      document.getElementById('product-modal-title').innerText = "Add New Product";
+      document.getElementById('product-form').reset();
+      document.getElementById('prod-id').value = '';
+      document.getElementById('upload-preview').style.display = 'none';
+      uploadedImageData = '';
+      openModal('product-form-modal');
+    }
+
+    function openEditProductModal(id) {
+      const p = products.find(prod => prod.id === id);
+      if(!p) return;
+
+      document.getElementById('product-modal-title').innerText = "Edit Product";
+      document.getElementById('prod-id').value = p.id;
+      document.getElementById('prod-name').value = p.name;
+      document.getElementById('prod-category').value = p.category;
+      document.getElementById('prod-price').value = p.price;
+      document.getElementById('prod-desc').value = p.description;
+
+      uploadedImageData = p.image;
+      const preview = document.getElementById('upload-preview');
+      preview.src = p.image;
+      preview.style.display = 'block';
+
+      openModal('product-form-modal');
+    }
+
+    function handleSaveProduct(e) {
+      e.preventDefault();
+
+      if(!uploadedImageData) {
+        alert("Please upload a product image!");
+        return;
+      }
+
+      const id = document.getElementById('prod-id').value;
+      const name = document.getElementById('prod-name').value.trim();
+      const category = document.getElementById('prod-category').value;
+      const price = Number(document.getElementById('prod-price').value);
+      const description = document.getElementById('prod-desc').value.trim();
+
+      if(id) {
+        const index = products.findIndex(p => p.id === id);
+        if(index !== -1) {
+          products[index] = { id, name, category, price, image: uploadedImageData, description };
+        }
+      } else {
+        const newProduct = {
+          id: 'p-' + Date.now(),
+          name, category, price, image: uploadedImageData, description
+        };
+        products.push(newProduct);
+      }
+
+      saveData();
+      closeModal('product-form-modal');
+      renderAdminProducts();
+    }
+
+    function deleteProduct(id) {
+      if(confirm('Are you sure you want to remove this product?')) {
+        products = products.filter(p => p.id !== id);
+        saveData();
+        renderAdminProducts();
+      }
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+  </script>
+</body>
+</html>
