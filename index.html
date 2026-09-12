@@ -1654,7 +1654,7 @@
     async function fetchProducts() {
       const grid = document.getElementById('product-grid');
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getProducts`);
+        const response = await fetch(`${SCRIPT_URL}?action=getProducts&t=${new Date().getTime()}`);
         products = await response.json();
         renderProducts();
         renderAdminProducts();
@@ -1667,7 +1667,7 @@
 
     async function fetchOrders() {
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getOrders`);
+        const response = await fetch(`${SCRIPT_URL}?action=getOrders&t=${new Date().getTime()}`);
         orders = await response.json();
         renderAdminDashboard();
         renderAdminOrders();
