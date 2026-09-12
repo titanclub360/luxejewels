@@ -3,26 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LuxeJewels | Fine Jewelry Store & Admin</title>
+  <title>Glow and Grace | Everyday Elegance, Timeless Shine</title>
   <!-- Google Fonts & FontAwesome -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     :root {
       --primary: #d4af37;
-      --primary-dark: #aa8828;
+      --primary-dark: #b59022;
+      --primary-light: #f7e8b5;
       --secondary: #1a1a1a;
-      --light-bg: #fdfbf7;
+      --light-bg: #faf8f5;
       --card-bg: #ffffff;
       --text-main: #2c2c2c;
       --text-muted: #666666;
-      --border-color: #eae1d0;
+      --border-color: #e8e1d5;
       --danger: #ea4335;
       --success: #2ecc71;
-      --info: #3498db;
-      --warning: #f39c12;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
       --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
@@ -92,12 +91,12 @@
       font-size: 1.1rem;
     }
 
-    /* Navigation */
+    /* Navigation Bar */
     .navbar {
-      background: rgba(26, 26, 26, 0.95);
+      background: rgba(26, 26, 26, 0.96);
       backdrop-filter: blur(10px);
       color: #fff;
-      padding: 0.8rem 5%;
+      padding: 0.7rem 5%;
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -105,17 +104,50 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      border-bottom: 2px solid var(--primary);
     }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--primary);
+    .logo-container {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       cursor: pointer;
+    }
+
+    .brand-logo-img {
+      height: 48px;
+      width: auto;
+      border-radius: 50%;
+      border: 1px solid var(--primary);
+      background-color: #faf8f5;
+      object-fit: contain;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      color: var(--border-color);
+      text-transform: uppercase;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .btn-cart {
@@ -129,6 +161,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      border: 1px solid var(--primary);
     }
 
     .btn-cart:hover {
@@ -184,9 +217,9 @@
 
     /* Hero Banner */
     .hero {
-      background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
-      min-height: 40vh;
-      padding: 50px 20px;
+      background: linear-gradient(rgba(26,26,26,0.7), rgba(26,26,26,0.7)), url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+      min-height: 42vh;
+      padding: 60px 20px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -195,22 +228,43 @@
       color: #fff;
     }
 
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      color: var(--primary);
-      margin-bottom: 12px;
+    .hero-logo {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+      margin-bottom: 15px;
+      background: #faf8f5;
     }
 
-    .hero p {
-      font-size: clamp(0.95rem, 2vw, 1.2rem);
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      color: var(--primary);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .hero p.tagline {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--primary-light);
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .hero p.sub-desc {
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem);
       max-width: 600px;
       font-weight: 300;
+      color: #e0e0e0;
     }
 
     /* Section Containers */
     .container {
       max-width: 1200px;
-      margin: 30px auto;
+      margin: 35px auto;
       padding: 0 15px;
       flex: 1;
       width: 100%;
@@ -240,30 +294,32 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 30px;
+      margin-bottom: 35px;
       flex-wrap: wrap;
     }
 
     .filter-btn {
-      padding: 8px 18px;
+      padding: 8px 20px;
       background: #fff;
       border: 1px solid var(--border-color);
-      border-radius: 20px;
+      border-radius: 25px;
       font-size: 0.85rem;
       font-weight: 500;
+      color: var(--text-main);
     }
 
     .filter-btn.active, .filter-btn:hover {
       background: var(--primary);
-      color: #fff;
+      color: var(--secondary);
+      font-weight: 600;
       border-color: var(--primary);
     }
 
     /* Product Grid */
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 25px;
     }
 
     .product-card {
@@ -274,11 +330,11 @@
       transition: var(--transition);
       display: flex;
       flex-direction: column;
-      border: 1px solid rgba(0,0,0,0.03);
+      border: 1px solid var(--border-color);
     }
 
     .product-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-6px);
       box-shadow: 0 15px 35px rgba(0,0,0,0.12);
     }
 
@@ -301,7 +357,7 @@
     }
 
     .product-card:hover .product-img {
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
 
     .product-info {
@@ -317,7 +373,7 @@
       align-self: center;
       font-size: 0.72rem;
       font-weight: 700;
-      background: #f0ede6;
+      background: #f4efea;
       color: var(--secondary);
       padding: 3px 10px;
       border-radius: 12px;
@@ -348,7 +404,7 @@
     }
 
     .product-price {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 700;
       color: var(--secondary);
       margin-bottom: 15px;
@@ -380,13 +436,14 @@
       grid-template-columns: 1fr 1fr;
       gap: 40px;
       align-items: center;
+      border: 1px solid var(--border-color);
     }
 
     .landing-img-container {
       width: 100%;
       border-radius: 12px;
       overflow: hidden;
-      background: #fdfbf7;
+      background: #faf8f5;
     }
 
     .landing-img-container img {
@@ -500,8 +557,8 @@
     }
 
     .social-icon {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       background: rgba(255, 255, 255, 0.08);
       color: #fff;
       border-radius: 50%;
@@ -509,6 +566,7 @@
       align-items: center;
       justify-content: center;
       font-size: 0.85rem;
+      border: 1px solid rgba(212, 175, 55, 0.3);
     }
 
     .social-icon:hover {
@@ -601,7 +659,7 @@
       width: 100%;
       padding: 14px;
       background: var(--primary);
-      color: #fff;
+      color: var(--secondary);
       font-size: 0.95rem;
       font-weight: 700;
       border-radius: 8px;
@@ -611,7 +669,7 @@
       gap: 8px;
     }
 
-    .btn-order-now:hover { background: var(--primary-dark); }
+    .btn-order-now:hover { background: var(--primary-dark); color: #fff; }
 
     /* Cart Drawer */
     .cart-drawer-card {
@@ -687,7 +745,7 @@
     }
 
     .payment-summary {
-      background: #fdfbf7;
+      background: #faf8f5;
       border: 1px dashed var(--primary);
       padding: 12px 15px;
       border-radius: 8px;
@@ -856,7 +914,7 @@
       gap: 4px;
     }
 
-    .btn-edit { background: var(--info); }
+    .btn-edit { background: #3498db; }
     .btn-delete { background: var(--danger); }
 
     .login-box {
@@ -973,10 +1031,13 @@
     }
 
     @media(max-width: 576px) {
-      .navbar { padding: 0.8rem 1rem; }
-      .logo { font-size: 1.3rem; }
+      .navbar { padding: 0.7rem 1rem; }
+      .brand-title { font-size: 1.1rem; }
+      .brand-subtitle { font-size: 0.55rem; }
+      .brand-logo-img { height: 40px; }
       .btn-cart { padding: 6px 14px; font-size: 0.8rem; }
-      .hero { min-height: 35vh; padding: 40px 15px; }
+      .hero { min-height: 38vh; padding: 40px 15px; }
+      .hero-logo { width: 85px; height: 85px; }
       .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
       .product-info { padding: 12px; }
       .product-title { font-size: 0.95rem; margin-bottom: 4px; }
@@ -1001,10 +1062,14 @@
   <!-- CLIENT STORE VIEW -->
   <div id="client-view">
     <nav class="navbar">
-      <div class="logo" onclick="showCatalogView()">
-        <i class="fa-solid fa-gem"></i> LuxeJewels
+      <div class="logo-container" onclick="showCatalogView()">
+        <img src="logo.jpeg" alt="Glow and Grace Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-title">GLOW AND GRACE</span>
+          <span class="brand-subtitle">Everyday Elegance, Timeless Shine</span>
+        </div>
       </div>
-      <div class="nav-links">
+      <div class="nav-actions">
         <button class="btn-cart" onclick="openCartModal()">
           <i class="fa-solid fa-cart-shopping"></i> Cart
           <span class="cart-badge" id="cart-count">0</span>
@@ -1013,8 +1078,10 @@
     </nav>
 
     <header class="hero">
-      <h1>Timeless Elegance & Beauty</h1>
-      <p>Discover our exclusive handcrafted jewelry collections designed to make every moment sparkle.</p>
+      <img src="logo.jpeg" alt="Glow and Grace Logo" class="hero-logo">
+      <h1>GLOW AND GRACE</h1>
+      <p class="tagline">Everyday Elegance, Timeless Shine</p>
+      <p class="sub-desc">Discover handcrafted luxury jewelry tailored to make every occasion memorable across Bangladesh.</p>
     </header>
 
     <main class="container">
@@ -1069,10 +1136,14 @@
     <footer>
       <div class="footer-container">
         <div class="footer-col">
-          <div class="logo" style="margin-bottom: 12px; font-size: 1.3rem;" onclick="showCatalogView()">
-            <i class="fa-solid fa-gem"></i> LuxeJewels
+          <div class="logo-container" style="margin-bottom: 15px;" onclick="showCatalogView()">
+            <img src="logo.jpeg" alt="Glow and Grace Logo" class="brand-logo-img">
+            <div class="brand-text">
+              <span class="brand-title">GLOW AND GRACE</span>
+              <span class="brand-subtitle">Online Jewelry Shop | Bangladesh</span>
+            </div>
           </div>
-          <p>Exquisite fine jewelry designed with precision, authenticity, and elegance. Elevate your everyday style with our handcrafted collections.</p>
+          <p>Exquisite fine jewelry designed with precision, authenticity, and everyday elegance. Elevate your personal style with our handcrafted collections.</p>
           <div class="social-links">
             <a href="#" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
             <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
@@ -1092,7 +1163,7 @@
         </div>
 
         <div class="footer-col">
-          <h3>Customer Service</h3>
+          <h3>Customer Care</h3>
           <ul class="footer-links">
             <li><a href="#"><i class="fa-solid fa-angle-right"></i> Shipping & Delivery</a></li>
             <li><a href="#"><i class="fa-solid fa-angle-right"></i> Return & Exchange Policy</a></li>
@@ -1106,7 +1177,7 @@
           <ul class="contact-info">
             <li>
               <i class="fa-solid fa-location-dot"></i>
-              <span>House 42, Road 11, Block D, Banani, Dhaka, Bangladesh</span>
+              <span>Banani, Dhaka, Bangladesh</span>
             </li>
             <li>
               <i class="fa-solid fa-phone"></i>
@@ -1114,14 +1185,14 @@
             </li>
             <li>
               <i class="fa-solid fa-envelope"></i>
-              <span>support@luxejewels.com</span>
+              <span>support@glowandgrace.com</span>
             </li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <p>&copy; 2026 LuxeJewels. All Rights Reserved.</p>
+        <p>&copy; 2026 Glow and Grace. All Rights Reserved.</p>
         <p>
           <a href="javascript:void(0)" onclick="openAdminLoginModal()" style="color:var(--primary); text-decoration: underline;">
             <i class="fa-solid fa-lock"></i> Staff Login
@@ -1134,7 +1205,7 @@
   <!-- ADMIN PANEL VIEW -->
   <div id="admin-view">
     <div class="admin-header">
-      <h2><i class="fa-solid fa-user-shield"></i> Store Admin Panel</h2>
+      <h2><i class="fa-solid fa-user-shield"></i> Glow and Grace Admin Panel</h2>
       <div>
         <button class="btn-refresh" id="btn-admin-refresh" onclick="refreshAdminData()">
           <i class="fa-solid fa-rotate"></i> Refresh Data
@@ -1471,7 +1542,7 @@
 
     let products = [];
     let orders = [];
-    let cart = JSON.parse(localStorage.getItem('luxe_cart')) || [];
+    let cart = JSON.parse(localStorage.getItem('glow_grace_cart')) || [];
     let activeCategory = 'All';
     let uploadedImageData = '';
     let isEditingProduct = false;
@@ -1628,7 +1699,7 @@
     function showCatalogView(pushHistory = true) {
       if (pushHistory) {
         const baseUrl = window.location.origin + window.location.pathname;
-        history.pushState({}, 'LuxeJewels', baseUrl);
+        history.pushState({}, 'Glow and Grace', baseUrl);
       }
 
       document.getElementById('product-landing-view').style.display = 'none';
@@ -1642,7 +1713,7 @@
         try {
           await navigator.share({
             title: title,
-            text: `Check out ${title} on LuxeJewels!`,
+            text: `Check out ${title} on Glow and Grace!`,
             url: url
           });
         } catch (err) {
@@ -1691,7 +1762,7 @@
     }
 
     function saveCartLocal() {
-      localStorage.setItem('luxe_cart', JSON.stringify(cart));
+      localStorage.setItem('glow_grace_cart', JSON.stringify(cart));
       updateCartBadge();
     }
 
@@ -1829,7 +1900,7 @@
         });
 
         cart = [];
-        localStorage.removeItem('luxe_cart');
+        localStorage.removeItem('glow_grace_cart');
         updateCartBadge();
 
         closeModal('confirm-place-order-modal');
