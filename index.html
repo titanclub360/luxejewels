@@ -98,7 +98,7 @@
       background: rgba(18, 18, 18, 0.95);
       backdrop-filter: blur(12px);
       color: #fff;
-      padding: 1rem 5%;
+      padding: 0.8rem 5%;
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -116,25 +116,17 @@
       cursor: pointer;
     }
 
-    .header-logo-img {
-      height: 45px;
-      width: 45px;
+    /* Logo Image Styling for Perfect Proportions */
+    .logo-img {
+      height: 48px;
+      width: auto;
       object-fit: contain;
       border-radius: 50%;
+      display: block;
     }
 
-    .footer-logo-img {
-      height: 50px;
-      width: 50px;
-      object-fit: contain;
-      border-radius: 50%;
-    }
-
-    .admin-logo-img {
-      height: 38px;
-      width: 38px;
-      object-fit: contain;
-      border-radius: 50%;
+    .footer-col .logo-img {
+      height: 55px;
     }
 
     .brand-text {
@@ -230,7 +222,7 @@
       color: #fff;
     }
 
-    /* Hero Banner - Elegant Minimalist Design */
+    /* Hero Banner */
     .hero {
       background: linear-gradient(rgba(18, 18, 18, 0.75), rgba(18, 18, 18, 0.75)), url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
       min-height: 38vh;
@@ -1113,6 +1105,7 @@
       .navbar { padding: 0.8rem 1rem; }
       .brand-title { font-size: 1.15rem; }
       .brand-subtitle { font-size: 0.55rem; }
+      .logo-img { height: 40px; }
       .btn-cart { padding: 7px 15px; font-size: 0.8rem; }
       .hero { min-height: 32vh; padding: 45px 15px; }
       .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
@@ -1140,7 +1133,7 @@
   <div id="client-view">
     <nav class="navbar">
       <div class="logo-container" onclick="showCatalogView()">
-        <img src="logo.jpeg" alt="Glow and Grace Logo" class="header-logo-img">
+        <img src="logo_5.jpeg" alt="Glow and Grace Logo" class="logo-img">
         <div class="brand-text">
           <span class="brand-title">GLOW AND GRACE</span>
           <span class="brand-subtitle">Everyday Elegance, Timeless Shine</span>
@@ -1219,7 +1212,7 @@
       <div class="footer-container">
         <div class="footer-col">
           <div class="logo-container" style="margin-bottom: 15px;" onclick="showCatalogView()">
-            <img src="logo.jpeg" alt="Glow and Grace Logo" class="footer-logo-img">
+            <img src="logo_5.jpeg" alt="Glow and Grace Logo" class="logo-img">
             <div class="brand-text">
               <span class="brand-title">GLOW AND GRACE</span>
               <span class="brand-subtitle">Online Jewelry Shop | Bangladesh</span>
@@ -1287,10 +1280,7 @@
   <!-- ADMIN PANEL VIEW -->
   <div id="admin-view">
     <div class="admin-header">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="logo.jpeg" alt="Glow and Grace Logo" class="admin-logo-img">
-        <h2><i class="fa-solid fa-user-shield"></i> Glow and Grace Admin Panel</h2>
-      </div>
+      <h2><i class="fa-solid fa-user-shield"></i> Glow and Grace Admin Panel</h2>
       <div>
         <button class="btn-refresh" id="btn-admin-refresh" onclick="refreshAdminData()">
           <i class="fa-solid fa-rotate"></i> Refresh Data
