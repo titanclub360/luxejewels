@@ -311,6 +311,69 @@
       color: #fff;
     }
 
+    /* Product Landing Page Custom Elements */
+    .landing-action-btns {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .btn-share {
+      background: #f0f0f0;
+      color: var(--secondary);
+      padding: 14px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-share:hover {
+      background: #e0e0e0;
+    }
+
+    .share-link-input-box {
+      margin-top: 20px;
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .share-link-input-box label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #666;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .share-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .share-input-group input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #444;
+      background: #fff;
+    }
+
+    .share-input-group button {
+      background: var(--secondary);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
     /* --- Footer Styles --- */
     footer {
       background-color: var(--secondary);
@@ -872,6 +935,7 @@
       .hero h1 { font-size: 2.2rem; }
       .footer-bottom { flex-direction: column; text-align: center; }
       #landing-details-card { grid-template-columns: 1fr !important; gap: 20px !important; }
+      .landing-action-btns { flex-direction: column; }
     }
   </style>
 </head>
@@ -931,10 +995,24 @@
             <p id="landing-prod-cat" class="product-category"></p>
             <h1 id="landing-prod-title" style="font-size: 2.2rem; margin-bottom: 15px;"></h1>
             <div id="landing-prod-price" class="detail-price" style="font-size: 1.8rem; margin-bottom: 20px;"></div>
-            <p id="landing-prod-desc" class="detail-desc" style="margin-bottom: 30px; color: #555; line-height: 1.8;"></p>
-            <button class="btn-order-now" id="landing-add-cart-btn" style="padding: 14px 24px; font-size: 1.05rem;">
-              <i class="fa-solid fa-cart-plus"></i> Add to Cart
-            </button>
+            <p id="landing-prod-desc" class="detail-desc" style="margin-bottom: 25px; color: #555; line-height: 1.8;"></p>
+            
+            <div class="landing-action-btns">
+              <button class="btn-order-now" id="landing-add-cart-btn" style="padding: 14px 24px; font-size: 1rem; flex: 2;">
+                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+              </button>
+              <button class="btn-share" id="landing-share-btn" style="flex: 1;">
+                <i class="fa-solid fa-share-nodes"></i> Share
+              </button>
+            </div>
+
+            <div class="share-link-input-box">
+              <label><i class="fa-solid fa-link"></i> Direct Product Link:</label>
+              <div class="share-input-group">
+                <input type="text" id="landing-share-url-input" readonly>
+                <button onclick="copyShareUrl()"><i class="fa-solid fa-copy"></i> Copy</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1366,6 +1444,23 @@
       updateCartBadge();
     };
 
+    // Listen to browser Back/Forward navigation
+    window.onpopstate = function() {
+      checkUrlRoute();
+    };
+
+    // Check if the URL contains a direct link to a product (e.g. ?product=p-123)
+    function checkUrlRoute() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const prodId = urlParams.get('product');
+
+      if (prodId && products.length > 0) {
+        openProductLandingPage(prodId, false);
+      } else {
+        showCatalogView(false);
+      }
+    }
+
     // --- DATABASE SERVICES ---
     async function fetchProducts() {
       const grid = document.getElementById('product-grid');
@@ -1374,6 +1469,7 @@
         products = await response.json();
         renderProducts();
         renderAdminProducts();
+        checkUrlRoute(); // Check URL query parameters after catalog loads
       } catch (err) {
         grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--danger);">Failed to load products from database spreadsheet.</p>`;
         console.error(err);
@@ -1445,8 +1541,8 @@
       showCatalogView();
     }
 
-    // --- PRODUCT LANDING PAGE CONTROLLERS ---
-    function openProductLandingPage(id) {
+    // --- PRODUCT LANDING PAGE & SHARE LINK CONTROLLERS ---
+    function openProductLandingPage(id, pushHistory = true) {
       const product = products.find(p => String(p.id) === String(id));
       if (!product) return;
 
@@ -1462,6 +1558,23 @@
         openCartModal();
       };
 
+      // Construct Shareable Link for this exact product
+      const baseUrl = window.location.origin + window.location.pathname;
+      const shareUrl = `${baseUrl}?product=${encodeURIComponent(product.id)}`;
+
+      document.getElementById('landing-share-url-input').value = shareUrl;
+
+      // Setup Share Button Handler
+      const shareBtn = document.getElementById('landing-share-btn');
+      shareBtn.onclick = function() {
+        triggerProductShare(product.name, product.description, shareUrl);
+      };
+
+      // Update URL in browser bar without reloading page
+      if (pushHistory) {
+        history.pushState({ productId: product.id }, product.name, shareUrl);
+      }
+
       document.querySelector('.hero').style.display = 'none';
       document.querySelector('main.container').style.display = 'none';
       document.getElementById('product-landing-view').style.display = 'block';
@@ -1469,11 +1582,41 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function showCatalogView() {
+    function showCatalogView(pushHistory = true) {
+      if (pushHistory) {
+        const baseUrl = window.location.origin + window.location.pathname;
+        history.pushState({}, 'LuxeJewels', baseUrl);
+      }
+
       document.getElementById('product-landing-view').style.display = 'none';
       document.querySelector('.hero').style.display = 'flex';
       document.querySelector('main.container').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Native Web Share API or Direct Link Fallback
+    async function triggerProductShare(title, text, url) {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: title,
+            text: `Check out ${title} on LuxeJewels!`,
+            url: url
+          });
+        } catch (err) {
+          console.log("Share cancelled or failed:", err);
+        }
+      } else {
+        copyShareUrl();
+      }
+    }
+
+    function copyShareUrl() {
+      const input = document.getElementById('landing-share-url-input');
+      input.select();
+      input.setSelectionRange(0, 99999); // Mobile
+      navigator.clipboard.writeText(input.value);
+      alert('📋 Product link copied to clipboard!');
     }
 
     // --- CART MANAGEMENT ---
