@@ -892,6 +892,26 @@
 
   <!-- ==================== CLIENT STORE VIEW ==================== -->
   <div id="client-view">
+    <!-- ==================== PRODUCT LANDING PAGE VIEW ==================== -->
+<div id="product-landing-view" style="display: none; padding: 40px 0; min-height: 80vh;">
+  <div class="container" style="max-width: 900px;">
+    <button class="btn-admin-toggle" onclick="showCatalogView()" style="margin-bottom: 20px; cursor: pointer;">
+      <i class="fa-solid fa-arrow-left"></i> Back to Products
+    </button>
+    <div style="background: #fff; border-radius: 12px; padding: 30px; box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr 1fr; gap: 40px;" id="landing-details-card">
+      <img id="landing-prod-img" src="" alt="Product Image" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px;">
+      <div>
+        <p id="landing-prod-cat" class="product-category"></p>
+        <h1 id="landing-prod-title" style="font-size: 2.2rem; margin-bottom: 15px;"></h1>
+        <div id="landing-prod-price" class="detail-price" style="font-size: 1.8rem; margin-bottom: 20px;"></div>
+        <p id="landing-prod-desc" class="detail-desc" style="margin-bottom: 30px; color: #555; line-height: 1.8;"></p>
+        <button class="btn-order-now" id="landing-add-cart-btn" style="padding: 14px 24px; font-size: 1.05rem;">
+          <i class="fa-solid fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
     <!-- Navbar -->
     <nav class="navbar">
       <div class="logo">
@@ -1416,8 +1436,8 @@
       }
     }
 
-    // --- CLIENT UI RENDERERS ---
-    function renderProducts() {
+    // RENDER PRODUCTS WITH LANDING PAGE CLICK HANDLER
+function renderProducts() {
   const grid = document.getElementById('product-grid');
   grid.innerHTML = '';
 
@@ -1431,26 +1451,52 @@
   }
 
   filtered.forEach(p => {
-    // Construct the landing page URL using the product ID as a URL parameter
-    const landingPageUrl = `product.html?id=${encodeURIComponent(p.id)}`;
-
     const card = document.createElement('div');
     card.className = 'product-card';
     card.innerHTML = `
-      <a href="${landingPageUrl}" style="display: block;">
-        <img src="${p.image}" alt="${p.name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
-      </a>
+      <img src="${p.image}" alt="${p.name}" class="product-img" style="cursor: pointer;" onclick="openProductLandingPage('${p.id}')" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
       <div class="product-info">
         <div class="product-category">${p.category}</div>
-        <a href="${landingPageUrl}">
-          <h3 class="product-title">${p.name}</h3>
-        </a>
+        <h3 class="product-title" style="cursor: pointer;" onclick="openProductLandingPage('${p.id}')">${p.name}</h3>
         <div class="product-price">${p.price} Tk</div>
-        <a href="${landingPageUrl}" class="btn-view" style="display: inline-block; text-align: center; box-sizing: border-box;">View Details</a>
+        <button class="btn-view" onclick="openProductLandingPage('${p.id}')">View Details</button>
       </div>
     `;
     grid.appendChild(card);
   });
+}
+
+// OPEN PRODUCT LANDING PAGE VIEW
+function openProductLandingPage(id) {
+  const product = products.find(p => String(p.id) === String(id));
+  if (!product) return;
+
+  document.getElementById('landing-prod-img').src = product.image;
+  document.getElementById('landing-prod-cat').innerText = product.category;
+  document.getElementById('landing-prod-title').innerText = product.name;
+  document.getElementById('landing-prod-price').innerText = `${product.price} Tk`;
+  document.getElementById('landing-prod-desc').innerText = product.description;
+
+  const cartBtn = document.getElementById('landing-add-cart-btn');
+  cartBtn.onclick = function() {
+    addToCart(product.id);
+    openCartModal();
+  };
+
+  // Hide Hero banner & product grid, show landing page view
+  document.querySelector('.hero').style.display = 'none';
+  document.querySelector('main.container').style.display = 'none';
+  document.getElementById('product-landing-view').style.display = 'block';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// BACK TO CATALOG VIEW
+function showCatalogView() {
+  document.getElementById('product-landing-view').style.display = 'none';
+  document.querySelector('.hero').style.display = 'flex';
+  document.querySelector('main.container').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
     function filterCategory(cat) {
