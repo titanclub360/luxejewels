@@ -116,6 +116,27 @@
       cursor: pointer;
     }
 
+    .header-logo-img {
+      height: 45px;
+      width: 45px;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+
+    .footer-logo-img {
+      height: 50px;
+      width: 50px;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+
+    .admin-logo-img {
+      height: 38px;
+      width: 38px;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+
     .brand-text {
       display: flex;
       flex-direction: column;
@@ -1119,6 +1140,7 @@
   <div id="client-view">
     <nav class="navbar">
       <div class="logo-container" onclick="showCatalogView()">
+        <img src="logo.jpeg" alt="Glow and Grace Logo" class="header-logo-img">
         <div class="brand-text">
           <span class="brand-title">GLOW AND GRACE</span>
           <span class="brand-subtitle">Everyday Elegance, Timeless Shine</span>
@@ -1197,6 +1219,7 @@
       <div class="footer-container">
         <div class="footer-col">
           <div class="logo-container" style="margin-bottom: 15px;" onclick="showCatalogView()">
+            <img src="logo.jpeg" alt="Glow and Grace Logo" class="footer-logo-img">
             <div class="brand-text">
               <span class="brand-title">GLOW AND GRACE</span>
               <span class="brand-subtitle">Online Jewelry Shop | Bangladesh</span>
@@ -1264,7 +1287,10 @@
   <!-- ADMIN PANEL VIEW -->
   <div id="admin-view">
     <div class="admin-header">
-      <h2><i class="fa-solid fa-user-shield"></i> Glow and Grace Admin Panel</h2>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="logo.jpeg" alt="Glow and Grace Logo" class="admin-logo-img">
+        <h2><i class="fa-solid fa-user-shield"></i> Glow and Grace Admin Panel</h2>
+      </div>
       <div>
         <button class="btn-refresh" id="btn-admin-refresh" onclick="refreshAdminData()">
           <i class="fa-solid fa-rotate"></i> Refresh Data
