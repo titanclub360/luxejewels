@@ -1431,15 +1431,22 @@
   }
 
   filtered.forEach(p => {
+    // Construct the landing page URL using the product ID as a URL parameter
+    const landingPageUrl = `product.html?id=${encodeURIComponent(p.id)}`;
+
     const card = document.createElement('div');
     card.className = 'product-card';
     card.innerHTML = `
-      <img src="${p.image}" alt="${p.name}" class="product-img" style="cursor: pointer;" onclick="openProductDetail('${p.id}')" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
+      <a href="${landingPageUrl}" style="display: block;">
+        <img src="${p.image}" alt="${p.name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
+      </a>
       <div class="product-info">
         <div class="product-category">${p.category}</div>
-        <h3 class="product-title">${p.name}</h3>
+        <a href="${landingPageUrl}">
+          <h3 class="product-title">${p.name}</h3>
+        </a>
         <div class="product-price">${p.price} Tk</div>
-        <button class="btn-view" onclick="openProductDetail('${p.id}')">View Details</button>
+        <a href="${landingPageUrl}" class="btn-view" style="display: inline-block; text-align: center; box-sizing: border-box;">View Details</a>
       </div>
     `;
     grid.appendChild(card);
