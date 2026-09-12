@@ -98,7 +98,7 @@
       background: rgba(18, 18, 18, 0.95);
       backdrop-filter: blur(12px);
       color: #fff;
-      padding: 1rem 5%;
+      padding: 0.8rem 5%;
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -114,6 +114,14 @@
       align-items: center;
       gap: 12px;
       cursor: pointer;
+    }
+
+    .logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
     }
 
     .brand-text {
@@ -209,7 +217,7 @@
       color: #fff;
     }
 
-    /* Hero Banner - Elegant Minimalist Design */
+    /* Hero Banner */
     .hero {
       background: linear-gradient(rgba(18, 18, 18, 0.75), rgba(18, 18, 18, 0.75)), url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
       min-height: 38vh;
@@ -319,7 +327,6 @@
       box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
     }
 
-    /* Mobile Hamburger Trigger for Categories */
     .category-menu-toggle {
       display: none;
       background: var(--secondary);
@@ -832,7 +839,6 @@
       flex-wrap: wrap;
       gap: 12px;
       box-shadow: var(--shadow-md);
-      border-bottom: 2px solid var(--primary);
     }
 
     .admin-header h2 { font-size: 1.35rem; }
@@ -1093,6 +1099,7 @@
       .navbar { padding: 0.8rem 1rem; }
       .brand-title { font-size: 1.15rem; }
       .brand-subtitle { font-size: 0.55rem; }
+      .logo-img { height: 40px; }
       .btn-cart { padding: 7px 15px; font-size: 0.8rem; }
       .hero { min-height: 32vh; padding: 45px 15px; }
       .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
@@ -1120,6 +1127,7 @@
   <div id="client-view">
     <nav class="navbar">
       <div class="logo-container" onclick="showCatalogView()">
+        <img src="logo_5.jpeg" alt="Glow and Grace Logo" class="logo-img">
         <div class="brand-text">
           <span class="brand-title">GLOW AND GRACE</span>
           <span class="brand-subtitle">Everyday Elegance, Timeless Shine</span>
@@ -1198,6 +1206,7 @@
       <div class="footer-container">
         <div class="footer-col">
           <div class="logo-container" style="margin-bottom: 15px;" onclick="showCatalogView()">
+            <img src="logo_5.jpeg" alt="Glow and Grace Logo" class="logo-img">
             <div class="brand-text">
               <span class="brand-title">GLOW AND GRACE</span>
               <span class="brand-subtitle">Online Jewelry Shop | Bangladesh</span>
@@ -1265,12 +1274,7 @@
   <!-- ADMIN PANEL VIEW -->
   <div id="admin-view">
     <div class="admin-header">
-      <div class="logo-container" onclick="logoutAdmin()">
-        <div class="brand-text">
-          <span class="brand-title">GLOW AND GRACE</span>
-          <span class="brand-subtitle"><i class="fa-solid fa-user-shield"></i> Admin Panel</span>
-        </div>
-      </div>
+      <h2><i class="fa-solid fa-user-shield"></i> Glow and Grace Admin Panel</h2>
       <div>
         <button class="btn-refresh" id="btn-admin-refresh" onclick="refreshAdminData()">
           <i class="fa-solid fa-rotate"></i> Refresh Data
@@ -2245,23 +2249,28 @@
     }
 
     function openEditProductModal(id) {
-      const p = products.find(prod => String(prod.id || prod.productId) === String(id));
+      const targetId = String(id).trim();
+      const p = products.find(prod => String(prod.id || prod.productId).trim() === targetId);
       if(!p) return;
 
       isEditingProduct = true;
       document.getElementById('product-modal-title').innerText = "Edit Product";
-      document.getElementById('prod-custom-id').value = p.id || p.productId;
+      document.getElementById('prod-custom-id').value = targetId;
       document.getElementById('prod-custom-id').readOnly = true; 
-      document.getElementById('prod-name').value = p.name;
-      document.getElementById('prod-category').value = p.category;
-      document.getElementById('prod-price').value = p.price;
-      document.getElementById('prod-img-url').value = p.image;
-      document.getElementById('prod-desc').value = p.description;
+      document.getElementById('prod-name').value = p.name || '';
+      document.getElementById('prod-category').value = p.category || 'Rings';
+      document.getElementById('prod-price').value = p.price || 0;
+      document.getElementById('prod-img-url').value = p.image || '';
+      document.getElementById('prod-desc').value = p.description || '';
       document.getElementById('prod-img-file').value = '';
 
       const preview = document.getElementById('upload-preview');
-      preview.src = p.image;
-      preview.style.display = 'block';
+      if (p.image) {
+        preview.src = p.image;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
       uploadedImageData = '';
 
       openModal('product-form-modal');
@@ -2285,6 +2294,7 @@
 
       const prodPayload = {
         id: customId,
+        productId: customId,
         name: document.getElementById('prod-name').value.trim(),
         category: document.getElementById('prod-category').value,
         price: Number(document.getElementById('prod-price').value),
@@ -2295,10 +2305,12 @@
       const action = isEditingProduct ? 'editProduct' : 'addProduct';
 
       try {
-        await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify({ action: action, product: prodPayload })
         });
+        
+        const result = await response.json().catch(() => ({}));
 
         closeModal('product-form-modal');
         await fetchProducts();
@@ -2310,6 +2322,7 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = `Save Product to Database`;
+        isEditingProduct = false; // Reset state securely
       }
     }
 
