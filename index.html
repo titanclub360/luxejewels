@@ -272,7 +272,8 @@
 
     .section-title {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      scroll-margin-top: 130px;
     }
 
     .section-title h2 {
@@ -289,13 +290,26 @@
       margin: 10px auto 0;
     }
 
-    /* Filter Controls */
+    /* Sticky Filter Navigation Bar */
+    .filter-sticky-wrapper {
+      position: sticky;
+      top: 66px; /* Sits directly under navbar */
+      z-index: 990;
+      background: #ffffff;
+      padding: 12px 15px;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      margin-bottom: 35px;
+    }
+
     .filter-bar {
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 35px;
       flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .filter-btn {
@@ -313,6 +327,20 @@
       color: var(--secondary);
       font-weight: 600;
       border-color: var(--primary);
+    }
+
+    /* Mobile Hamburger Trigger for Categories */
+    .category-menu-toggle {
+      display: none;
+      background: var(--secondary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 0 auto;
+      align-items: center;
+      gap: 8px;
     }
 
     /* Product Grid */
@@ -1030,6 +1058,25 @@
       }
     }
 
+    @media(max-width: 650px) {
+      .category-menu-toggle {
+        display: flex;
+      }
+      .filter-bar {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: 10px;
+      }
+      .filter-bar.open {
+        display: flex;
+      }
+      .filter-btn {
+        text-align: center;
+        border-radius: 8px;
+      }
+    }
+
     @media(max-width: 576px) {
       .navbar { padding: 0.7rem 1rem; }
       .brand-title { font-size: 1.1rem; }
@@ -1084,17 +1131,23 @@
       <p class="sub-desc">Discover handcrafted luxury jewelry tailored to make every occasion memorable across Bangladesh.</p>
     </header>
 
-    <main class="container">
-      <div class="section-title">
-        <h2>Our Exclusive Collection</h2>
-      </div>
-
+    <!-- Sticky Filter Controls Bar -->
+    <div class="filter-sticky-wrapper">
+      <button class="category-menu-toggle" onclick="toggleMobileCategoryMenu()">
+        <i class="fa-solid fa-bars"></i> Select Category
+      </button>
       <div class="filter-bar" id="category-filters">
         <button class="filter-btn active" onclick="filterCategory('All')">All</button>
         <button class="filter-btn" onclick="filterCategory('Rings')">Rings</button>
         <button class="filter-btn" onclick="filterCategory('Necklaces')">Necklaces</button>
         <button class="filter-btn" onclick="filterCategory('Earrings')">Earrings</button>
         <button class="filter-btn" onclick="filterCategory('Bracelets')">Bracelets</button>
+      </div>
+    </div>
+
+    <main class="container">
+      <div class="section-title" id="catalog-section">
+        <h2>Our Exclusive Collection</h2>
       </div>
 
       <div class="product-grid" id="product-grid">
@@ -1155,9 +1208,9 @@
         <div class="footer-col">
           <h3>Quick Links</h3>
           <ul class="footer-links">
-            <li><a href="#" onclick="showCatalogView(); filterCategory('All');"><i class="fa-solid fa-angle-right"></i> All Products</a></li>
-            <li><a href="#" onclick="showCatalogView(); filterCategory('Rings');"><i class="fa-solid fa-angle-right"></i> Diamond Rings</a></li>
-            <li><a href="#" onclick="showCatalogView(); filterCategory('Necklaces');"><i class="fa-solid fa-angle-right"></i> Gold Necklaces</a></li>
+            <li><a href="#" onclick="filterCategory('All');"><i class="fa-solid fa-angle-right"></i> All Products</a></li>
+            <li><a href="#" onclick="filterCategory('Rings');"><i class="fa-solid fa-angle-right"></i> Diamond Rings</a></li>
+            <li><a href="#" onclick="filterCategory('Necklaces');"><i class="fa-solid fa-angle-right"></i> Gold Necklaces</a></li>
             <li><a href="#" onclick="openCartModal()"><i class="fa-solid fa-angle-right"></i> View Cart</a></li>
           </ul>
         </div>
@@ -1650,13 +1703,31 @@
       });
     }
 
+    function toggleMobileCategoryMenu() {
+      const bar = document.getElementById('category-filters');
+      bar.classList.toggle('open');
+    }
+
     function filterCategory(cat) {
       activeCategory = cat;
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.toggle('active', btn.innerText === cat);
       });
+
+      // Close mobile dropdown menu after selection
+      const filterBar = document.getElementById('category-filters');
+      if (filterBar.classList.contains('open')) {
+        filterBar.classList.remove('open');
+      }
+
       renderProducts();
       showCatalogView();
+
+      // Smooth scroll to catalog section header
+      const catalogHeader = document.getElementById('catalog-section');
+      if (catalogHeader) {
+        catalogHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function openProductLandingPage(id, pushHistory = true) {
@@ -1690,6 +1761,7 @@
       }
 
       document.querySelector('.hero').style.display = 'none';
+      document.querySelector('.filter-sticky-wrapper').style.display = 'none';
       document.querySelector('main.container').style.display = 'none';
       document.getElementById('product-landing-view').style.display = 'block';
 
@@ -1704,8 +1776,8 @@
 
       document.getElementById('product-landing-view').style.display = 'none';
       document.querySelector('.hero').style.display = 'flex';
+      document.querySelector('.filter-sticky-wrapper').style.display = 'block';
       document.querySelector('main.container').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function triggerProductShare(title, text, url) {
