@@ -1418,33 +1418,33 @@
 
     // --- CLIENT UI RENDERERS ---
     function renderProducts() {
-      const grid = document.getElementById('product-grid');
-      grid.innerHTML = '';
+  const grid = document.getElementById('product-grid');
+  grid.innerHTML = '';
 
-      const filtered = activeCategory === 'All' 
-        ? products 
-        : products.filter(p => p.category === activeCategory);
+  const filtered = activeCategory === 'All' 
+    ? products 
+    : products.filter(p => p.category === activeCategory);
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found in this category.</p>`;
-        return;
-      }
+  if (filtered.length === 0) {
+    grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found in this category.</p>`;
+    return;
+  }
 
-      filtered.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <img src="${p.image}" alt="${p.name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
-          <div class="product-info">
-            <div class="product-category">${p.category}</div>
-            <h3 class="product-title">${p.name}</h3>
-            <div class="product-price">${p.price} Tk</div>
-            <button class="btn-view" onclick="openProductDetail('${p.id}')">View Details</button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
+  filtered.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <img src="${p.image}" alt="${p.name}" class="product-img" style="cursor: pointer;" onclick="openProductDetail('${p.id}')" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
+      <div class="product-info">
+        <div class="product-category">${p.category}</div>
+        <h3 class="product-title">${p.name}</h3>
+        <div class="product-price">${p.price} Tk</div>
+        <button class="btn-view" onclick="openProductDetail('${p.id}')">View Details</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
 
     function filterCategory(cat) {
       activeCategory = cat;
