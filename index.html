@@ -116,17 +116,12 @@
       cursor: pointer;
     }
 
-    /* Logo Image Styling for Perfect Proportions */
     .logo-img {
       height: 48px;
       width: auto;
       object-fit: contain;
       border-radius: 50%;
       display: block;
-    }
-
-    .footer-col .logo-img {
-      height: 55px;
     }
 
     .brand-text {
@@ -332,7 +327,6 @@
       box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
     }
 
-    /* Mobile Hamburger Trigger for Categories */
     .category-menu-toggle {
       display: none;
       background: var(--secondary);
@@ -2295,6 +2289,7 @@
 
       const prodPayload = {
         id: customId,
+        productId: customId, // Included both keys to ensure backend sheet compatibility
         name: document.getElementById('prod-name').value.trim(),
         category: document.getElementById('prod-category').value,
         price: Number(document.getElementById('prod-price').value),
