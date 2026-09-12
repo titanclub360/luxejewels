@@ -83,6 +83,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
     }
 
     .nav-links {
@@ -260,6 +261,7 @@
       width: 100%;
       height: 250px;
       object-fit: cover;
+      cursor: pointer;
     }
 
     .product-info {
@@ -280,6 +282,11 @@
       font-size: 1.2rem;
       color: var(--secondary);
       margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .product-title:hover {
+      color: var(--primary-dark);
     }
 
     .product-price {
@@ -461,26 +468,6 @@
     }
 
     .close-modal:hover { color: #000; }
-
-    /* Product Detail Layout */
-    .product-detail-body {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      padding: 30px;
-    }
-
-    .detail-img {
-      width: 100%;
-      height: 350px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    .detail-content h2 {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
 
     .detail-price {
       font-size: 1.5rem;
@@ -769,7 +756,7 @@
       color: var(--primary-dark);
     }
 
-    /* --- Standardized Warning Modals (Delete & Customer Checkout) --- */
+    /* Warning Modals */
     .warning-modal-card {
       background: #ffffff;
       border-radius: 20px;
@@ -882,9 +869,9 @@
     }
 
     @media(max-width: 768px) {
-      .product-detail-body { grid-template-columns: 1fr; }
       .hero h1 { font-size: 2.2rem; }
       .footer-bottom { flex-direction: column; text-align: center; }
+      #landing-details-card { grid-template-columns: 1fr !important; gap: 20px !important; }
     }
   </style>
 </head>
@@ -892,29 +879,9 @@
 
   <!-- ==================== CLIENT STORE VIEW ==================== -->
   <div id="client-view">
-    <!-- ==================== PRODUCT LANDING PAGE VIEW ==================== -->
-<div id="product-landing-view" style="display: none; padding: 40px 0; min-height: 80vh;">
-  <div class="container" style="max-width: 900px;">
-    <button class="btn-admin-toggle" onclick="showCatalogView()" style="margin-bottom: 20px; cursor: pointer;">
-      <i class="fa-solid fa-arrow-left"></i> Back to Products
-    </button>
-    <div style="background: #fff; border-radius: 12px; padding: 30px; box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr 1fr; gap: 40px;" id="landing-details-card">
-      <img id="landing-prod-img" src="" alt="Product Image" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px;">
-      <div>
-        <p id="landing-prod-cat" class="product-category"></p>
-        <h1 id="landing-prod-title" style="font-size: 2.2rem; margin-bottom: 15px;"></h1>
-        <div id="landing-prod-price" class="detail-price" style="font-size: 1.8rem; margin-bottom: 20px;"></div>
-        <p id="landing-prod-desc" class="detail-desc" style="margin-bottom: 30px; color: #555; line-height: 1.8;"></p>
-        <button class="btn-order-now" id="landing-add-cart-btn" style="padding: 14px 24px; font-size: 1.05rem;">
-          <i class="fa-solid fa-cart-plus"></i> Add to Cart
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
     <!-- Navbar -->
     <nav class="navbar">
-      <div class="logo">
+      <div class="logo" onclick="showCatalogView()">
         <i class="fa-solid fa-gem"></i> LuxeJewels
       </div>
       <div class="nav-links">
@@ -952,12 +919,33 @@
       </div>
     </main>
 
+    <!-- Product Details Landing Page Container View -->
+    <div id="product-landing-view" style="display: none; padding: 40px 0; min-height: 80vh;">
+      <div class="container" style="max-width: 950px;">
+        <button class="btn-admin-toggle" onclick="showCatalogView()" style="margin-bottom: 25px; cursor: pointer; padding: 10px 22px;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Products
+        </button>
+        <div id="landing-details-card" style="background: #fff; border-radius: 12px; padding: 35px; box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+          <img id="landing-prod-img" src="" alt="Product Image" style="width: 100%; max-height: 420px; object-fit: cover; border-radius: 8px;">
+          <div>
+            <p id="landing-prod-cat" class="product-category"></p>
+            <h1 id="landing-prod-title" style="font-size: 2.2rem; margin-bottom: 15px;"></h1>
+            <div id="landing-prod-price" class="detail-price" style="font-size: 1.8rem; margin-bottom: 20px;"></div>
+            <p id="landing-prod-desc" class="detail-desc" style="margin-bottom: 30px; color: #555; line-height: 1.8;"></p>
+            <button class="btn-order-now" id="landing-add-cart-btn" style="padding: 14px 24px; font-size: 1.05rem;">
+              <i class="fa-solid fa-cart-plus"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Footer Section -->
     <footer>
       <div class="footer-container">
         <!-- Col 1: About -->
         <div class="footer-col">
-          <div class="logo" style="margin-bottom: 15px; font-size: 1.5rem;">
+          <div class="logo" style="margin-bottom: 15px; font-size: 1.5rem;" onclick="showCatalogView()">
             <i class="fa-solid fa-gem"></i> LuxeJewels
           </div>
           <p>Exquisite fine jewelry designed with precision, authenticity, and elegance. Elevate your everyday style with our handcrafted collections.</p>
@@ -973,9 +961,9 @@
         <div class="footer-col">
           <h3>Quick Links</h3>
           <ul class="footer-links">
-            <li><a href="#" onclick="filterCategory('All')"><i class="fa-solid fa-angle-right"></i> All Products</a></li>
-            <li><a href="#" onclick="filterCategory('Rings')"><i class="fa-solid fa-angle-right"></i> Diamond Rings</a></li>
-            <li><a href="#" onclick="filterCategory('Necklaces')"><i class="fa-solid fa-angle-right"></i> Gold Necklaces</a></li>
+            <li><a href="#" onclick="showCatalogView(); filterCategory('All');"><i class="fa-solid fa-angle-right"></i> All Products</a></li>
+            <li><a href="#" onclick="showCatalogView(); filterCategory('Rings');"><i class="fa-solid fa-angle-right"></i> Diamond Rings</a></li>
+            <li><a href="#" onclick="showCatalogView(); filterCategory('Necklaces');"><i class="fa-solid fa-angle-right"></i> Gold Necklaces</a></li>
             <li><a href="#" onclick="openCartModal()"><i class="fa-solid fa-angle-right"></i> View Cart</a></li>
           </ul>
         </div>
@@ -1149,27 +1137,9 @@
     </div>
   </div>
 
-
   <!-- ==================== MODALS ==================== -->
 
-  <!-- 1. Product Detail Modal -->
-  <div class="modal-overlay" id="product-detail-modal">
-    <div class="modal-card">
-      <span class="close-modal" onclick="closeModal('product-detail-modal')">&times;</span>
-      <div class="product-detail-body">
-        <img id="modal-detail-img" src="" alt="Product" class="detail-img">
-        <div class="detail-content">
-          <p id="modal-detail-cat" class="product-category"></p>
-          <h2 id="modal-detail-title"></h2>
-          <div id="modal-detail-price" class="detail-price"></div>
-          <p id="modal-detail-desc" class="detail-desc"></p>
-          <button class="btn-order-now" id="modal-add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. Cart Modal -->
+  <!-- Cart Modal -->
   <div class="modal-overlay" id="cart-modal">
     <div class="modal-card cart-drawer-card">
       <span class="close-modal" onclick="closeModal('cart-modal')">&times;</span>
@@ -1196,7 +1166,7 @@
     </div>
   </div>
 
-  <!-- 3. Checkout Modal -->
+  <!-- Checkout Modal -->
   <div class="modal-overlay" id="checkout-modal">
     <div class="modal-card">
       <span class="close-modal" onclick="closeModal('checkout-modal')">&times;</span>
@@ -1258,7 +1228,7 @@
     </div>
   </div>
 
-  <!-- 4. Customer Place Order Confirmation Warning Modal -->
+  <!-- Customer Place Order Confirmation Warning Modal -->
   <div class="modal-overlay" id="confirm-place-order-modal">
     <div class="warning-modal-card">
       <span class="close-modal" onclick="closeModal('confirm-place-order-modal')">&times;</span>
@@ -1276,7 +1246,7 @@
     </div>
   </div>
 
-  <!-- 5. Admin Login Modal -->
+  <!-- Admin Login Modal -->
   <div class="modal-overlay" id="admin-login-modal">
     <div class="modal-card login-box">
       <span class="close-modal" onclick="closeModal('admin-login-modal')">&times;</span>
@@ -1292,7 +1262,7 @@
     </div>
   </div>
 
-  <!-- 6. Add/Edit Product Modal -->
+  <!-- Add/Edit Product Modal -->
   <div class="modal-overlay" id="product-form-modal">
     <div class="modal-card">
       <span class="close-modal" onclick="closeModal('product-form-modal')">&times;</span>
@@ -1339,7 +1309,7 @@
     </div>
   </div>
 
-  <!-- 7. Delete Order Confirmation Warning Modal -->
+  <!-- Delete Order Confirmation Warning Modal -->
   <div class="modal-overlay" id="delete-order-modal">
     <div class="warning-modal-card">
       <span class="close-modal" onclick="closeModal('delete-order-modal')">&times;</span>
@@ -1357,7 +1327,7 @@
     </div>
   </div>
 
-  <!-- 8. Delete Product Confirmation Warning Modal -->
+  <!-- Delete Product Confirmation Warning Modal -->
   <div class="modal-overlay" id="delete-product-modal">
     <div class="warning-modal-card">
       <span class="close-modal" onclick="closeModal('delete-product-modal')">&times;</span>
@@ -1396,7 +1366,7 @@
       updateCartBadge();
     };
 
-    // --- GOOGLE APPS SCRIPT DATABASE SERVICES ---
+    // --- DATABASE SERVICES ---
     async function fetchProducts() {
       const grid = document.getElementById('product-grid');
       try {
@@ -1436,68 +1406,35 @@
       }
     }
 
-    // RENDER PRODUCTS WITH LANDING PAGE CLICK HANDLER
-function renderProducts() {
-  const grid = document.getElementById('product-grid');
-  grid.innerHTML = '';
+    // --- CLIENT UI RENDERERS ---
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
 
-  const filtered = activeCategory === 'All' 
-    ? products 
-    : products.filter(p => p.category === activeCategory);
+      const filtered = activeCategory === 'All' 
+        ? products 
+        : products.filter(p => p.category === activeCategory);
 
-  if (filtered.length === 0) {
-    grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found in this category.</p>`;
-    return;
-  }
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found in this category.</p>`;
+        return;
+      }
 
-  filtered.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <img src="${p.image}" alt="${p.name}" class="product-img" style="cursor: pointer;" onclick="openProductLandingPage('${p.id}')" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
-      <div class="product-info">
-        <div class="product-category">${p.category}</div>
-        <h3 class="product-title" style="cursor: pointer;" onclick="openProductLandingPage('${p.id}')">${p.name}</h3>
-        <div class="product-price">${p.price} Tk</div>
-        <button class="btn-view" onclick="openProductLandingPage('${p.id}')">View Details</button>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-// OPEN PRODUCT LANDING PAGE VIEW
-function openProductLandingPage(id) {
-  const product = products.find(p => String(p.id) === String(id));
-  if (!product) return;
-
-  document.getElementById('landing-prod-img').src = product.image;
-  document.getElementById('landing-prod-cat').innerText = product.category;
-  document.getElementById('landing-prod-title').innerText = product.name;
-  document.getElementById('landing-prod-price').innerText = `${product.price} Tk`;
-  document.getElementById('landing-prod-desc').innerText = product.description;
-
-  const cartBtn = document.getElementById('landing-add-cart-btn');
-  cartBtn.onclick = function() {
-    addToCart(product.id);
-    openCartModal();
-  };
-
-  // Hide Hero banner & product grid, show landing page view
-  document.querySelector('.hero').style.display = 'none';
-  document.querySelector('main.container').style.display = 'none';
-  document.getElementById('product-landing-view').style.display = 'block';
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// BACK TO CATALOG VIEW
-function showCatalogView() {
-  document.getElementById('product-landing-view').style.display = 'none';
-  document.querySelector('.hero').style.display = 'flex';
-  document.querySelector('main.container').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" class="product-img" onclick="openProductLandingPage('${p.id}')" onerror="this.src='https://via.placeholder.com/300x250?text=Jewelry+Image'">
+          <div class="product-info">
+            <div class="product-category">${p.category}</div>
+            <h3 class="product-title" onclick="openProductLandingPage('${p.id}')">${p.name}</h3>
+            <div class="product-price">${p.price} Tk</div>
+            <button class="btn-view" onclick="openProductLandingPage('${p.id}')">View Details</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
 
     function filterCategory(cat) {
       activeCategory = cat;
@@ -1505,30 +1442,41 @@ function showCatalogView() {
         btn.classList.toggle('active', btn.innerText === cat);
       });
       renderProducts();
-      window.scrollTo({ top: 400, behavior: 'smooth' });
+      showCatalogView();
     }
 
-    function openProductDetail(id) {
-      selectedProduct = products.find(p => String(p.id) === String(id));
-      if(!selectedProduct) return;
+    // --- PRODUCT LANDING PAGE CONTROLLERS ---
+    function openProductLandingPage(id) {
+      const product = products.find(p => String(p.id) === String(id));
+      if (!product) return;
 
-      document.getElementById('modal-detail-img').src = selectedProduct.image;
-      document.getElementById('modal-detail-cat').innerText = selectedProduct.category;
-      document.getElementById('modal-detail-title').innerText = selectedProduct.name;
-      document.getElementById('modal-detail-price').innerText = `${selectedProduct.price} Tk`;
-      document.getElementById('modal-detail-desc').innerText = selectedProduct.description;
+      document.getElementById('landing-prod-img').src = product.image;
+      document.getElementById('landing-prod-cat').innerText = product.category;
+      document.getElementById('landing-prod-title').innerText = product.name;
+      document.getElementById('landing-prod-price').innerText = `${product.price} Tk`;
+      document.getElementById('landing-prod-desc').innerText = product.description;
 
-      const addBtn = document.getElementById('modal-add-cart-btn');
-      addBtn.onclick = function() {
-        addToCart(selectedProduct.id);
-        closeModal('product-detail-modal');
+      const cartBtn = document.getElementById('landing-add-cart-btn');
+      cartBtn.onclick = function() {
+        addToCart(product.id);
         openCartModal();
       };
 
-      openModal('product-detail-modal');
+      document.querySelector('.hero').style.display = 'none';
+      document.querySelector('main.container').style.display = 'none';
+      document.getElementById('product-landing-view').style.display = 'block';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // CART MANAGEMENT
+    function showCatalogView() {
+      document.getElementById('product-landing-view').style.display = 'none';
+      document.querySelector('.hero').style.display = 'flex';
+      document.querySelector('main.container').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- CART MANAGEMENT ---
     function addToCart(productId) {
       const existing = cart.find(item => String(item.id) === String(productId));
       if(existing) {
@@ -1651,7 +1599,6 @@ function showCatalogView() {
       }
     }
 
-    // PROMPT WARNING BOX ON ORDER SUBMISSION
     function promptConfirmOrder(e) {
       e.preventDefault();
 
@@ -1666,7 +1613,6 @@ function showCatalogView() {
       openModal('confirm-place-order-modal');
     }
 
-    // POST ORDER TO DATABASE SHEET AFTER CONFIRMATION
     async function executePlaceOrder() {
       const btn = document.getElementById('btn-final-confirm-order');
       btn.disabled = true;
@@ -1715,7 +1661,7 @@ function showCatalogView() {
       }
     }
 
-    // --- ADMIN PANEL CONTROLLERS ---
+    // --- ADMIN CONTROLLERS ---
     function openAdminLoginModal() {
       openModal('admin-login-modal');
     }
@@ -1861,7 +1807,6 @@ function showCatalogView() {
       }
     }
 
-    // PROMPT & CONFIRM ORDER DELETION
     function promptDeleteOrder(orderId) {
       document.getElementById('delete-order-id-display').innerText = orderId;
       const confirmBtn = document.getElementById('btn-confirm-order-delete');
@@ -1897,7 +1842,6 @@ function showCatalogView() {
       }
     }
 
-    // PRODUCT INVENTORY MANAGEMENT
     function renderAdminProducts() {
       const tbody = document.getElementById('admin-products-tbody');
       tbody.innerHTML = '';
@@ -1981,7 +1925,6 @@ function showCatalogView() {
       openModal('product-form-modal');
     }
 
-    // POST PRODUCT (ADD OR EDIT) TO DATABASE SHEET
     async function handleSaveProduct(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-save-prod');
@@ -2027,7 +1970,6 @@ function showCatalogView() {
       }
     }
 
-    // PROMPT & CONFIRM PRODUCT DELETION
     function promptDeleteProduct(id) {
       const prod = products.find(p => String(p.id) === String(id));
       const prodName = prod ? prod.name : 'this product';
