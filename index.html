@@ -1609,7 +1609,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZ3Qkg4diGyZs7FdsfbGyKaDqAscLhJIASJK68SR7wbIAQXvqfMkEtBEDtx4nr8OzFpQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyvlDx4cTKalO5LHz00AqYmoU_hI8e64FgyxUM1wABd8mtaFQKGmXmv7UXKUTUuRFVkAg/exec";
     const SERVICE_CHARGE = 120;
     const ADMIN_PASSWORD_HASH = "admin123";
 
@@ -2276,50 +2276,66 @@
     }
 
     async function handleSaveProduct(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btn-save-prod');
-      const customId = document.getElementById('prod-custom-id').value.trim();
-      
-      const imageUrlInput = document.getElementById('prod-img-url').value.trim();
-      const finalImage = uploadedImageData || imageUrlInput;
+  e.preventDefault();
+  const btn = document.getElementById('btn-save-prod');
+  const customId = document.getElementById('prod-custom-id').value.trim();
+  
+  const imageUrlInput = document.getElementById('prod-img-url').value.trim();
+  const finalImage = uploadedImageData || imageUrlInput;
 
-      if (!finalImage) {
-        alert("Please enter an Image Link or upload a File!");
-        return;
+  if (!finalImage) {
+    alert("Please enter an Image Link or upload a File!");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+  const prodPayload = {
+    id: customId,
+    name: document.getElementById('prod-name').value.trim(),
+    category: document.getElementById('prod-category').value,
+    price: Number(document.getElementById('prod-price').value),
+    image: finalImage,
+    description: document.getElementById('prod-desc').value.trim()
+  };
+
+  const action = isEditingProduct ? 'editProduct' : 'addProduct';
+
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: action, product: prodPayload })
+    });
+    const result = await response.json();
+
+    if (result.status === "success") {
+      if (isEditingProduct) {
+        // Immediately update local array so UI updates without waiting for a re-fetch lag
+        const index = products.findIndex(p => String(p.id || p.productId) === String(customId));
+        if (index !== -1) {
+          products[index] = prodPayload;
+        }
+      } else {
+        products.push(prodPayload);
       }
 
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
-
-      const prodPayload = {
-        id: customId,
-        name: document.getElementById('prod-name').value.trim(),
-        category: document.getElementById('prod-category').value,
-        price: Number(document.getElementById('prod-price').value),
-        image: finalImage,
-        description: document.getElementById('prod-desc').value.trim()
-      };
-
-      const action = isEditingProduct ? 'editProduct' : 'addProduct';
-
-      try {
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: action, product: prodPayload })
-        });
-
-        closeModal('product-form-modal');
-        await fetchProducts();
-        renderAdminProducts();
-        showToast("Product saved successfully!");
-      } catch (err) {
-        alert("⚠️ Could not update product in spreadsheet.");
-        console.error(err);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `Save Product to Database`;
-      }
+      closeModal('product-form-modal');
+      renderAdminProducts();
+      renderProducts();
+      renderAdminDashboard();
+      showToast("Product saved successfully!");
+    } else {
+      alert("⚠️ Error saving product: " + (result.message || "Unknown error"));
     }
+  } catch (err) {
+    alert("⚠️ Could not update product in spreadsheet.");
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `Save Product to Database`;
+  }
+}
 
     function promptDeleteProduct(id) {
       const prod = products.find(p => String(p.id || p.productId) === String(id));
